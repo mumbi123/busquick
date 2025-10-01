@@ -1,0 +1,502 @@
+/* Login/Register Modal CSS */
+:root {
+  --primary-green: #10B981;
+  --dark-green: #047857;
+  --light-green: #34D399;
+  --accent-green: #A7F3D0;
+  --text-dark: #1F2937;
+  --text-light: #6B7280;
+  --white: #FFFFFF;
+  --border-radius: 12px;
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s ease;
+}
+
+/* Modal Wrapper */
+.auth-modal-wrapper {
+  z-index: 1050;
+}
+
+.auth-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  border: none;
+  padding: 0;
+}
+
+.auth-modal .ant-modal-body {
+  padding: 0;
+  margin: 0;
+}
+
+/* Auth Card Styling */
+.auth-dropdown-card {
+  position: relative;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.auth-dropdown-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+}
+
+.auth-dropdown-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.02) 0%, transparent 70%);
+  pointer-events: none;
+  animation: modalGlow 3s ease-in-out infinite alternate;
+}
+
+/* Close Button */
+.auth-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--text-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-close:hover {
+  background: var(--primary-green);
+  color: var(--white);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* Header */
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 5;
+}
+
+.auth-header h2 {
+  color: var(--text-dark);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header p {
+  color: var(--text-light);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Form Container */
+.auth-dropdown-card .ant-form,
+.auth-dropdown-card form {
+  position: relative;
+  z-index: 5;
+}
+
+/* Form Items */
+.auth-dropdown-card .ant-form-item {
+  margin-bottom: 1.5rem;
+}
+
+.auth-dropdown-card .ant-form-item-label > label {
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Input Fields */
+.auth-dropdown-card .ant-input,
+.auth-dropdown-card .ant-input-password,
+.auth-dropdown-card .ant-select-selector,
+.auth-dropdown-card input,
+.auth-dropdown-card select {
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  background: var(--white);
+  transition: var(--transition);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.auth-dropdown-card .ant-input:focus,
+.auth-dropdown-card .ant-input-password:focus,
+.auth-dropdown-card .ant-select-focused .ant-select-selector,
+.auth-dropdown-card input:focus,
+.auth-dropdown-card select:focus {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  outline: none;
+}
+
+.auth-dropdown-card .ant-input:hover,
+.auth-dropdown-card .ant-input-password:hover,
+.auth-dropdown-card .ant-select:hover .ant-select-selector,
+.auth-dropdown-card input:hover,
+.auth-dropdown-card select:hover {
+  border-color: var(--light-green);
+}
+
+/* Password Input */
+.auth-dropdown-card .ant-input-password .ant-input {
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.auth-dropdown-card .ant-input-password .anticon {
+  color: var(--text-light);
+}
+
+.auth-dropdown-card .ant-input-password .anticon:hover {
+  color: var(--primary-green);
+}
+
+/* Select Dropdown */
+.auth-dropdown-card .ant-select {
+  width: 100%;
+}
+
+.auth-dropdown-card .ant-select-arrow {
+  color: var(--text-light);
+}
+
+/* Submit Button */
+.auth-dropdown-card .ant-btn-primary,
+.auth-dropdown-card button[type="submit"],
+.auth-dropdown-card .submit-btn {
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--white);
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-dropdown-card .ant-btn-primary:hover,
+.auth-dropdown-card button[type="submit"]:hover,
+.auth-dropdown-card .submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, var(--dark-green), var(--primary-green));
+}
+
+.auth-dropdown-card .ant-btn-primary:active,
+.auth-dropdown-card button[type="submit"]:active,
+.auth-dropdown-card .submit-btn:active {
+  transform: translateY(0);
+}
+
+.auth-dropdown-card .ant-btn-primary::before,
+.auth-dropdown-card button[type="submit"]::before,
+.auth-dropdown-card .submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.auth-dropdown-card .ant-btn-primary:hover::before,
+.auth-dropdown-card button[type="submit"]:hover::before,
+.auth-dropdown-card .submit-btn:hover::before {
+  left: 100%;
+}
+
+/* Loading State */
+.auth-dropdown-card .ant-btn-loading,
+.auth-dropdown-card .loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.auth-dropdown-card .ant-btn-loading .anticon,
+.auth-dropdown-card .loading::after {
+  animation: spin 1s linear infinite;
+}
+
+/* Links */
+.auth-dropdown-card a,
+.auth-dropdown-card .link-btn {
+  color: var(--primary-green);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.auth-dropdown-card a:hover,
+.auth-dropdown-card .link-btn:hover {
+  color: var(--dark-green);
+  text-decoration: underline;
+}
+
+/* Switch Auth Mode Links */
+.auth-switch {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.auth-switch p {
+  color: var(--text-light);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  color: var(--primary-green);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  transition: var(--transition);
+}
+
+.auth-switch button:hover {
+  color: var(--dark-green);
+  transform: scale(1.02);
+}
+
+/* Error Messages */
+.auth-dropdown-card .ant-form-item-explain-error,
+.auth-dropdown-card .error-message {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Success Messages */
+.auth-dropdown-card .success-message {
+  color: var(--primary-green);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-green);
+  margin-bottom: 1rem;
+}
+
+/* Form Validation */
+.auth-dropdown-card .ant-form-item-has-error .ant-input,
+.auth-dropdown-card .ant-form-item-has-error .ant-input-password,
+.auth-dropdown-card .ant-form-item-has-error .ant-select-selector {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+.auth-dropdown-card .ant-form-item-has-success .ant-input,
+.auth-dropdown-card .ant-form-item-has-success .ant-input-password,
+.auth-dropdown-card .ant-form-item-has-success .ant-select-selector {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+/* Checkbox */
+.auth-dropdown-card .ant-checkbox-wrapper {
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.auth-dropdown-card .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+}
+
+.auth-dropdown-card .ant-checkbox:hover .ant-checkbox-inner,
+.auth-dropdown-card .ant-checkbox-input:focus + .ant-checkbox-inner {
+  border-color: var(--primary-green);
+}
+
+/* Radio Buttons */
+.auth-dropdown-card .ant-radio-button-wrapper {
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  color: var(--text-dark);
+  background: var(--white);
+  transition: var(--transition);
+}
+
+.auth-dropdown-card .ant-radio-button-wrapper:hover {
+  border-color: var(--light-green);
+  color: var(--primary-green);
+}
+
+.auth-dropdown-card .ant-radio-button-wrapper-checked {
+  background: var(--primary-green);
+  border-color: var(--primary-green);
+  color: var(--white);
+}
+
+.auth-dropdown-card .ant-radio-button-wrapper:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.auth-dropdown-card .ant-radio-button-wrapper:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .auth-modal .ant-modal-content {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .auth-dropdown-card {
+    padding: 1.5rem;
+    min-height: 350px;
+  }
+
+  .auth-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .auth-header p {
+    font-size: 0.9rem;
+  }
+
+  .auth-dropdown-card .ant-form-item {
+    margin-bottom: 1.25rem;
+  }
+
+  .auth-dropdown-card .ant-btn-primary,
+  .auth-dropdown-card button[type="submit"],
+  .auth-dropdown-card .submit-btn {
+    height: 44px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-modal .ant-modal-content {
+    margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+
+  .auth-dropdown-card {
+    padding: 1.25rem;
+    min-height: 320px;
+  }
+
+  .auth-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .auth-close {
+    width: 28px;
+    height: 28px;
+    font-size: 1.3rem;
+  }
+}
+
+/* Animations */
+@keyframes modalGlow {
+  0% { opacity: 0.02; }
+  100% { opacity: 0.05; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-dropdown-card {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Modal Mask */
+.auth-modal-wrapper .ant-modal-mask {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* Focus States */
+.auth-dropdown-card .ant-input:focus-visible,
+.auth-dropdown-card .ant-btn:focus-visible,
+.auth-dropdown-card button:focus-visible {
+  outline: 2px solid var(--primary-green);
+  outline-offset: 2px;
+}
+
+/* Disabled States */
+.auth-dropdown-card .ant-input:disabled,
+.auth-dropdown-card .ant-btn:disabled,
+.auth-dropdown-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Custom Scrollbar for Modal */
+.auth-dropdown-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.auth-dropdown-card::-webkit-scrollbar-track {
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 3px;
+}
+
+.auth-dropdown-card::-webkit-scrollbar-thumb {
+  background: var(--primary-green);
+  border-radius: 3px;
+}
+
+.auth-dropdown-card::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-green);
+}

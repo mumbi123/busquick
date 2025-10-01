@@ -1,0 +1,924 @@
+/* Professional Bus Booking System Styles */
+.booking-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 32px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e1e5e9;
+}
+
+/* Header Section */
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f1f3f4;
+}
+
+.booking-header h2 {
+    color: #1a1a1a; 
+    font-size: 28px;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.refresh-button {
+    background: linear-gradient(135deg, #40a944 0%, #40a944 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 12px rgba(64, 156, 68, 0.3);
+}
+
+.refresh-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(64, 156, 68, 0.3);
+    background: linear-gradient(135deg, #40a944 0%, #40a944 100%);
+}
+
+/* Tab Navigation Styles */
+.booking-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding: 8px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.tab-button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #6b7280;
+    position: relative;
+}
+
+.tab-button:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.tab-button.active {
+    background: linear-gradient(135deg, #40a944 0%, #40a944 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(64, 156, 68, 0.3);
+    font-weight: 600;
+}
+
+.tab-icon {
+    font-size: 16px;
+}
+
+.tab-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: inherit;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+}
+
+.tab-button.active .tab-count {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.tab-button:not(.active) .tab-count {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+/* Loading and Error States */
+.loading, .error {
+    text-align: center;
+    padding: 48px 24px;
+    font-size: 16px;
+    color: #666;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e1e5e9;
+    margin-top: 24px;
+}
+
+.loading .spinner {
+    border: 3px solid #f3f4f6;
+    border-top: 3px solid #40a944;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-container {
+    text-align: center;
+    padding: 48px 24px;
+    background: #fff5f5;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    margin-top: 24px;
+}
+
+.error {
+    color: #dc2626;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.retry-button {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+    background: #b91c1c;
+}
+
+/* Empty State */
+.no-bookings {
+    text-align: center;
+    padding: 64px 32px;
+    color: #6b7280;
+    background: #ffffff;
+    border-radius: 12px;
+    margin-top: 24px;
+    border: 2px dashed #e5e7eb;
+}
+
+.no-bookings-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.no-bookings h3 {
+    font-size: 20px;
+    color: #374151;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.no-bookings p {
+    font-size: 16px;
+    margin: 0;
+    color: #6b7280;
+}
+
+/* Bookings Grid */
+.bookings-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+/* Journey Card Design */
+.booking-card-journey {
+    background: #f5f5f5;
+    border-radius: 16px;
+    padding: 0;
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 12px;
+    overflow: hidden;
+    min-height: 80px;
+}
+
+.booking-card-journey:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card-journey.past-trip {
+    background: #f0f0f0;
+    opacity: 0.9;
+}
+
+.booking-card-journey.past-trip .journey-number {
+    background: #9ca3af;
+}
+
+.booking-card-journey.past-trip .departure-badge {
+    background: #6b7280;
+}
+
+.journey-number {
+    background: #fbbf24;
+    color: #1f2937;
+    font-size: 24px;
+    font-weight: 900;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px 0 0 16px;
+    flex-shrink: 0;
+}
+
+.journey-content {
+    flex: 1;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #ffffff;
+}
+
+.journey-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+}
+
+.bus-info-section {
+    flex: 1;
+}
+
+.bus-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+
+.route-compact {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+
+.route-label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.route-value {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.route-separator {
+    color: #9ca3af;
+    font-weight: bold;
+}
+
+.booking-meta-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.booking-id {
+    font-size: 11px;
+    color: #6b7280;
+    font-family: 'SF Mono', Consolas, 'Liberation Mono', monospace;
+}
+
+.booking-status-small {
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-info-journey {
+    font-size: 11px;
+    color: #6b7280;
+    padding: 4px 8px;
+    background: #f0f4f8;
+    border-radius: 4px;
+    border-left: 3px solid #0066cc;
+    margin-bottom: 4px;
+}
+
+.user-label {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #1f2937;
+    margin-left: 4px;
+}
+
+.user-email {
+    color: #6b7280;
+    margin-left: 4px;
+}
+
+.journey-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    align-items: center;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.detail-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.journey-details-grid > * {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.detail-label {
+    color: #6b7280;
+    font-weight: 500;
+    min-width: fit-content;
+}
+
+.detail-value {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.detail-value.price {
+    color: #dc2626;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.journey-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.action-btn {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.journey-actions .download-button,
+.journey-actions button[class*="download"],
+.journey-actions div > button,
+.journey-actions div {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    border-radius: 4px !important;
+    max-width: 100px !important;
+    min-width: auto !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    background: #10b981 !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    display: inline-block !important;
+    flex-shrink: 1 !important;
+}
+
+.journey-actions > div {
+    max-width: 100px !important;
+    overflow: hidden !important;
+    flex-shrink: 1 !important;
+    display: flex !important;
+}
+
+.journey-actions > div > * {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.cancel-btn {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.cancel-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.delete-btn {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.delete-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.departure-badge {
+    background: #1f2937;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 0 16px 16px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.departure-label {
+    font-size: 10px;
+    color: #d1d5db;
+    text-transform: lowercase;
+    margin-bottom: 4px;
+}
+
+.departure-time {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 2px;
+    line-height: 1;
+}
+
+.departure-date {
+    font-size: 12px;
+    color: #d1d5db;
+    font-weight: 500;
+}
+
+/* PDF Ticket Styles */
+.download-pdf-button-compact {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.download-pdf-button-compact:hover {
+    background: #059669;
+}
+
+/* PDF Ticket Container (Hidden) */
+.ticket-container {
+    width: 900px;
+    background: white;
+    padding: 40px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-sizing: border-box;
+}
+
+.ticket-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #0066cc;
+}
+
+.ticket-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0066cc;
+    margin-bottom: 12px;
+}
+
+.company-name {
+    font-size: 24px;
+    font-weight: 900;
+    color: #1f2937;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.company-contact {
+    font-size: 11px;
+    color: #6b7280;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.ticket-body {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.left-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-section {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 12px;
+    text-transform: capitalize;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 13px;
+    align-items: center;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+}
+
+.info-label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.info-value {
+    color: #1f2937;
+    font-weight: 600;
+    text-align: right;
+}
+
+.info-value.status-confirmed {
+    color: #22c55e;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.journey-route {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    background: #f0f9ff;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+.route-arrow {
+    color: #0066cc;
+    font-size: 24px;
+}
+
+.seat-map-section {
+    width: 280px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.front-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    background: #4b5563;
+    padding: 6px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.seat-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.seat-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.seat {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #9ca3af;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 600;
+    color: #6b7280;
+    background: #e5e7eb;
+}
+
+.seat.booked {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+.seat-aisle {
+    width: 28px;
+}
+
+.ticket-footer {
+    text-align: center;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-top: 2px dashed #d1d5db;
+    margin-top: 20px;
+}
+
+.footer-text {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+    margin-bottom: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .booking-container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .booking-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .booking-header h2 {
+        font-size: 24px;
+    }
+
+    .refresh-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .booking-tabs {
+        padding: 6px;
+        gap: 8px;
+    }
+
+    .tab-button {
+        padding: 14px 16px;
+        font-size: 13px;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .tab-icon {
+        font-size: 18px;
+    }
+
+    .tab-count {
+        margin-top: 2px;
+    }
+
+    .booking-card-journey {
+        flex-direction: column;
+        min-height: auto;
+        margin-bottom: 20px;
+    }
+
+    .journey-number {
+        width: 100%;
+        height: 60px;
+        border-radius: 16px 16px 0 0;
+        font-size: 24px;
+    }
+
+    .journey-content {
+        padding: 16px;
+        border-radius: 0;
+    }
+
+    .journey-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .booking-meta-section {
+        align-self: stretch;
+        justify-content: space-between;
+    }
+
+    .bus-name {
+        font-size: 16px;
+    }
+
+    .journey-details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .detail-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        padding: 8px;
+        background: #f8fafc;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .departure-badge {
+        border-radius: 0 0 16px 16px;
+        min-width: 100%;
+        padding: 16px;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .departure-label {
+        margin-bottom: 0;
+        margin-right: 8px;
+    }
+
+    .departure-time {
+        font-size: 18px;
+        margin-bottom: 0;
+    }
+
+    .departure-date {
+        font-size: 12px;
+    }
+
+    .journey-actions {
+        justify-content: center;
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid #f3f4f6;
+    }
+}
+
+@media (max-width: 480px) {
+    .tab-button {
+        padding: 12px 14px;
+        font-size: 12px;
+    }
+
+    .tab-icon {
+        font-size: 16px;
+    }
+
+    .booking-card-journey {
+        margin-bottom: 16px;
+    }
+
+    .journey-number {
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .journey-content {
+        padding: 14px;
+    }
+
+    .bus-name {
+        font-size: 15px;
+    }
+
+    .booking-id {
+        font-size: 11px;
+    }
+
+    .booking-status-small {
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+
+    .route-label, .route-value {
+        font-size: 13px;
+    }
+
+    .journey-details-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .detail-group {
+        padding: 6px;
+        font-size: 11px;
+    }
+
+    .departure-badge {
+        padding: 12px;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .departure-label {
+        margin-right: 0;
+        font-size: 11px;
+    }
+
+    .departure-time {
+        font-size: 16px;
+    }
+
+    .departure-date {
+        font-size: 11px;
+    }
+
+    .action-btn {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+
+    .user-info-journey {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+}

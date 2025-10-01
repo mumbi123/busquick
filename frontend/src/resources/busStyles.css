@@ -1,0 +1,593 @@
+/* Bus Management System - Booking Card Style */
+:root {
+  --primary: #40a944;
+  --primary-light: #4ade80;
+  --primary-dark: #15803d;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --background: #f8fafc;
+  --card-bg: #ffffff;
+  --border-color: #e1e5e9;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+  --border-radius: 16px;
+  --transition: all 0.3s ease;
+}
+
+/* Main Container */
+.admin-buses-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 32px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: var(--background);
+  min-height: 100vh;
+}
+
+/* Header Section */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f1f3f4;
+}
+
+.admin-header .page-title,
+.admin-header h1 {
+  color: var(--text-primary);
+  font-size: 28px;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+/* Add Bus Button */
+.add-bus-btn {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 12px rgba(64, 169, 68, 0.3);
+  text-decoration: none;
+}
+
+.add-bus-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(64, 169, 68, 0.4);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: white;
+}
+
+.plus-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Buses Grid */
+.buses-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Bus Card - Ultra compact horizontal layout */
+.bus-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  min-height: 80px;
+  position: relative;
+}
+
+.bus-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Bus Number Badge - Smaller and more compact */
+.bus-number-badge {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #92400e;
+  font-size: 18px;
+  font-weight: 900;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+  flex-shrink: 0;
+}
+
+/* Main Content - Single row layout */
+.bus-main-content {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* Bus Info Section - Inline */
+.bus-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.bus-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Fixed Route Text - Clear and Bold */
+.bus-route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.route-text {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.route-separator {
+  color: var(--primary);
+  margin: 0 2px;
+  font-weight: bold;
+}
+
+/* Bus ID - Inline */
+.bus-id-inline {
+  font-size: 11px;
+  color: var(--primary);
+  font-family: 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  font-weight: 500;
+  background: #f8fafc;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+/* All Details in ONE horizontal row - Payment Removed */
+.bus-all-details {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.detail-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.detail-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.seats-value {
+  color: var(--success);
+}
+
+.seats-value.low {
+  color: var(--warning);
+}
+
+.seats-value.full {
+  color: var(--danger);
+}
+
+.price-value {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+/* Actions Section - Inline */
+.bus-actions-inline {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.action-btn-inline {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.action-btn-inline.edit {
+  background: var(--success);
+  color: white;
+}
+
+.action-btn-inline.delete {
+  background: var(--danger);
+  color: white;
+}
+
+.action-btn-inline:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* Status Select - Compact */
+.status-select-inline .ant-select-selector {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 4px !important;
+  min-height: 24px !important;
+  font-size: 11px !important;
+}
+
+.status-select-inline .ant-select-selection-item {
+  font-size: 11px !important;
+  line-height: 22px !important;
+}
+
+/* Right Section - Compact departure */
+.bus-departure-compact {
+  background: #2d3748;
+  color: white;
+  padding: 16px 20px;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.departure-label-compact {
+  font-size: 9px;
+  color: #a0aec0;
+  text-transform: lowercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.departure-time-compact {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 2px;
+  line-height: 1;
+}
+
+.departure-date-compact {
+  font-size: 11px;
+  color: #a0aec0;
+  font-weight: 500;
+}
+
+/* Loading States */
+.loading {
+  text-align: center;
+  padding: 48px 24px;
+  font-size: 16px;
+  color: var(--text-secondary);
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin-top: 24px;
+}
+
+.loading .spinner {
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid var(--primary);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 64px 32px;
+  color: var(--text-secondary);
+  background: var(--card-bg);
+  border-radius: 12px;
+  margin-top: 24px;
+  border: 2px dashed var(--border-color);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+/* Responsive Design - 700px breakpoint */
+@media (max-width: 700px) {
+  .admin-buses-container {
+    margin: 16px;
+    padding: 20px;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .add-bus-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Mobile Card Layout - Vertical Stack */
+  .bus-card {
+    flex-direction: column;
+    min-height: auto;
+    max-width: 100%;
+  }
+
+  .bus-number-badge {
+    width: 100%;
+    height: 60px;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    font-size: 20px;
+  }
+
+  .bus-main-content {
+    padding: 16px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  /* Mobile Bus Info - Prominent Route Display */
+  .bus-info-section {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .bus-title {
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .bus-route {
+    justify-content: center;
+    gap: 8px;
+    font-size: 16px;
+    margin-bottom: 12px;
+    padding: 8px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .route-text {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 16px;
+  }
+
+  .route-separator {
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  /* Mobile Bus ID - Centered */
+  .bus-id-inline {
+    align-self: center;
+    margin-bottom: 8px;
+  }
+
+  /* Mobile Details - Grid Layout (2 columns, no payment) */
+  .bus-all-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 8px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border: 1px solid #f3f4f6;
+    font-size: 12px;
+    gap: 2px;
+  }
+
+  .detail-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+  }
+
+  .detail-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* Mobile Status - Full Width */
+  .detail-item:has(.status-select-inline) {
+    grid-column: 1 / -1;
+  }
+
+  .status-select-inline {
+    width: 100% !important;
+  }
+
+  /* Mobile Actions - Full Width Buttons */
+  .bus-actions-inline {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+    margin: 0;
+  }
+
+  .action-btn-inline {
+    flex: 1;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Mobile Departure - Horizontal Layout */
+  .bus-departure-compact {
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    min-width: 100%;
+    padding: 16px;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .departure-label-compact,
+  .departure-time-compact,
+  .departure-date-compact {
+    margin: 0;
+  }
+
+  .departure-time-compact {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-buses-container {
+    padding: 16px;
+    margin: 12px;
+  }
+
+  .bus-number-badge {
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .bus-main-content {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .bus-title {
+    font-size: 16px;
+  }
+
+  .bus-route {
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .route-text {
+    font-size: 14px;
+  }
+
+  .route-separator {
+    font-size: 16px;
+  }
+
+  /* Extra Small - Single Column Details */
+  .bus-all-details {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .detail-item {
+    padding: 6px;
+    font-size: 11px;
+  }
+
+  .detail-value {
+    font-size: 12px;
+  }
+
+  .action-btn-inline {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .bus-departure-compact {
+    padding: 12px;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .departure-time-compact {
+    font-size: 16px;
+  }
+}

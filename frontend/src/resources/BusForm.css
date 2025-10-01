@@ -1,0 +1,868 @@
+/* BusForm.css - Modern Bus Form Styling with Fixed Dropdowns */
+
+/* Global Modal Styling */
+.bus-form-modal {
+  z-index: 1000;
+  position: relative;
+}
+
+.bus-form-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1001;
+}
+
+.bus-form-modal .ant-modal-header {
+  background: linear-gradient(135deg, #40a944 0%, #4ade80 100%);
+  border-bottom: none;
+  padding: 24px 32px;
+  border-radius: 16px 16px 0 0;
+}
+
+.bus-form-modal .ant-modal-title {
+  color: white !important;
+}
+
+.bus-form-modal .ant-modal-close {
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bus-form-modal .ant-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+}
+
+.modal-header .ant-typography {
+  color: white !important;
+}
+
+.bus-form-modal .ant-modal-body {
+  padding: 0;
+  overflow: visible !important; /* Critical: Allow dropdowns to overflow */
+  position: relative;
+  z-index: 1002; /* Ensure body is above other elements */
+}
+
+.bus-form-container {
+  padding: 32px;
+  background: #fafbfc;
+  min-height: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: visible;
+  position: relative;
+}
+
+/* Steps Styling */
+.ant-steps {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e1e5e9;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon {
+  background-color: #40a944 !important;
+  border-color: #40a944 !important;
+}
+
+.ant-steps-item-active .ant-steps-item-icon {
+  background-color: #40a944 !important;
+  border-color: #40a944 !important;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon {
+  color: white !important;
+}
+
+.ant-steps-item-active .ant-steps-item-icon .ant-steps-icon {
+  color: white !important;
+}
+
+/* Step Content Styling */
+.step-content {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e1e5e9;
+  min-height: 500px;
+  position: relative;
+  overflow: visible !important; /* Prevent clipping of dropdowns */
+  z-index: 1003; /* Ensure content is above modal body */
+}
+
+.form-step {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.step-header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f1f3f4;
+}
+
+.step-header .ant-typography-title {
+  color: #40a944 !important;
+  margin-bottom: 8px !important;
+}
+
+.step-header .ant-typography {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #6b7280 !important;
+}
+
+/* Form Item Styling */
+.bus-form-modal .ant-form-item {
+  margin-bottom: 24px;
+  overflow: visible;
+  position: relative;
+  z-index: 1004; /* Ensure form items are above content */
+}
+
+.bus-form-modal .ant-form-item-label > label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  height: auto;
+}
+
+.bus-form-modal .ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  color: #ef4444;
+}
+
+/* Input Styling with Proper Focus States */
+.bus-form-modal .ant-input,
+.bus-form-modal .ant-input-number,
+.bus-form-modal .ant-picker {
+  border-radius: 8px !important;
+  border: 2px solid #e5e7eb !important;
+  transition: all 0.3s ease !important;
+  font-size: 14px;
+}
+
+.bus-form-modal .ant-input:focus,
+.bus-form-modal .ant-input-focused,
+.bus-form-modal .ant-input-number:focus,
+.bus-form-modal .ant-input-number-focused,
+.bus-form-modal .ant-picker:focus,
+.bus-form-modal .ant-picker-focused {
+  border-color: #40a944 !important;
+  box-shadow: 0 0 0 3px rgba(64, 169, 68, 0.1) !important;
+}
+
+.bus-form-modal .ant-input:hover,
+.bus-form-modal .ant-input-number:hover,
+.bus-form-modal .ant-picker:hover {
+  border-color: #40a944 !important;
+}
+
+/* DatePicker and TimePicker Specific Fixes */
+.bus-form-modal .ant-picker {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  position: relative;
+  z-index: 1005; /* Ensure picker is above form items */
+}
+
+.bus-form-modal .ant-picker-focused .ant-picker-dropdown {
+  z-index: 10006 !important;
+}
+
+.bus-form-modal .ant-picker-input input {
+  font-size: 14px;
+  color: #374151;
+}
+
+.bus-form-modal .ant-picker-suffix {
+  color: #40a944;
+}
+
+/* Dropdown Panel Styling - Critical for visibility */
+.ant-picker-dropdown,
+.ant-select-dropdown {
+  background-color: #ffffff !important; /* Solid background */
+  opacity: 1 !important; /* No transparency */
+  z-index: 10007 !important; /* Highest z-index for dropdowns */
+  position: absolute !important; /* Use absolute positioning */
+  top: 100% !important; /* Position below input */
+  left: 0 !important;
+  transform: none !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 8px !important;
+  border: 1px solid #e1e5e9 !important;
+  /* Override Ant Design default styles */
+  
+}
+
+.ant-picker-panel {
+  background-color: #ffffff !important; /* Solid background for date/time panels */
+  border: none !important;
+}
+
+.ant-picker-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px;
+}
+
+.ant-picker-header button {
+  color: #40a944 !important;
+}
+
+.ant-picker-header button:hover {
+  color: #369938 !important;
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #40a944 !important;
+  border-color: #40a944 !important;
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+  border-color: #40a944 !important;
+}
+
+.ant-picker-time-panel-column {
+  height: 224px;
+  overflow-y: auto;
+}
+
+.ant-picker-time-panel-cell-selected {
+  background-color: #40a944 !important;
+}
+
+/* Ensure dropdown content is fully opaque */
+.ant-picker-cell,
+.ant-select-item,
+.ant-select-item-option {
+  background-color: #ffffff !important;
+}
+
+.ant-select-item-option-selected {
+  background-color: #f0f9f0 !important;
+  color: #40a944 !important;
+}
+
+/* Amenities Grid */
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.amenity-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+}
+
+.amenity-card:hover {
+  border-color: #40a944;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 169, 68, 0.15);
+}
+
+.amenity-card .ant-checkbox-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.amenity-card .ant-checkbox-wrapper-checked {
+  color: #40a944;
+}
+
+.amenity-card .ant-checkbox-wrapper-checked .amenity-card {
+  border-color: #40a944;
+  background: #f0f9f0;
+}
+
+.amenity-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.amenity-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.amenity-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.amenity-checkbox .ant-checkbox {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.amenity-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #40a944 !important;
+  border-color: #40a944 !important;
+}
+
+.amenity-checkbox .ant-checkbox:hover .ant-checkbox-inner {
+  border-color: #40a944 !important;
+}
+
+/* Intermediate Stops Card */
+.ant-card-small > .ant-card-head {
+  min-height: auto;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #f8fafc;
+}
+
+.ant-card-small > .ant-card-body {
+  padding: 16px;
+}
+
+.ant-card-small {
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32px;
+  padding: 24px 32px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e1e5e9;
+}
+
+.form-actions .ant-btn {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  height: 40px !important;
+  padding: 0 24px !important;
+  font-size: 14px !important;
+}
+
+.form-actions .ant-btn-primary {
+  background: #40a944 !important;
+  border-color: #40a944 !important;
+  box-shadow: 0 2px 8px rgba(64, 169, 68, 0.3) !important;
+}
+
+.form-actions .ant-btn-primary:hover {
+  background: #369938 !important;
+  border-color: #369938 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(64, 169, 68, 0.4) !important;
+}
+
+/* Error States */
+.bus-form-modal .ant-form-item-has-error .ant-input,
+.bus-form-modal .ant-form-item-has-error .ant-input-number,
+.bus-form-modal .ant-form-item-has-error .ant-picker {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Success States */
+.bus-form-modal .ant-form-item-has-success .ant-input,
+.bus-form-modal .ant-form-item-has-success .ant-input-number,
+.bus-form-modal .ant-form-item-has-success .ant-picker {
+  border-color: #10b981 !important;
+}
+
+/* Loading States */
+.ant-btn-loading {
+  pointer-events: none;
+}
+
+/* Input Number Styling */
+.bus-form-modal .ant-input-number {
+  width: 100%;
+}
+
+.bus-form-modal .ant-input-number-input {
+  font-size: 14px;
+  padding: 8px 11px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .bus-form-modal {
+    width: 95% !important;
+    max-width: 1000px !important;
+  }
+  
+  .bus-form-container {
+    padding: 24px;
+  }
+  
+  .step-content {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .bus-form-modal {
+    width: 95% !important;
+    min-width: auto !important;
+    margin: 0 10px;
+  }
+  
+  .bus-form-container {
+    padding: 16px;
+    max-height: 85vh;
+  }
+  
+  .step-content {
+    padding: 20px 16px;
+    min-height: 400px;
+  }
+  
+  .form-actions {
+    padding: 16px;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .form-actions .ant-btn {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .amenities-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .amenity-card {
+    padding: 16px;
+  }
+  
+  .ant-steps {
+    padding: 16px 12px;
+  }
+  
+  .ant-steps-item-title {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 700px) {
+  .bus-form-modal {
+    width: 95% !important;
+    min-width: auto !important;
+    margin: 0 10px;
+    max-height: 95vh;
+  }
+  
+  .bus-form-container {
+    padding: 20px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  .step-content {
+    padding: 20px 16px;
+    min-height: 400px;
+    overflow: visible;
+  }
+
+  /* Mobile Steps - Compact */
+  .ant-steps {
+    padding: 16px 12px;
+    margin-bottom: 20px;
+  }
+  
+  .ant-steps-item {
+    min-width: auto;
+  }
+  
+  .ant-steps-item-title {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  
+  .ant-steps-item-icon {
+    width: 28px;
+    height: 28px;
+    line-height: 26px;
+  }
+
+  /* Mobile Form Layout */
+  .form-step {
+    gap: 20px;
+  }
+
+  .step-header {
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+  }
+  
+  .step-header .ant-typography-title {
+    font-size: 20px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .step-header .ant-typography {
+    font-size: 14px !important;
+  }
+
+  /* Mobile Grid - Stack vertically */
+  .bus-form-modal .ant-row {
+    margin: 0 !important;
+  }
+  
+  .bus-form-modal .ant-col {
+    padding: 0 8px !important;
+    margin-bottom: 16px;
+  }
+
+  /* Mobile Form Items */
+  .bus-form-modal .ant-form-item {
+    margin-bottom: 20px;
+  }
+  
+  .bus-form-modal .ant-form-item-label > label {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* Mobile Inputs */
+  .bus-form-modal .ant-input,
+  .bus-form-modal .ant-input-number,
+  .bus-form-modal .ant-picker {
+    height: 44px !important;
+    font-size: 16px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Mobile DatePicker/TimePicker specific */
+  .bus-form-modal .ant-picker {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .bus-form-modal .ant-picker-input input {
+    font-size: 16px !important;
+    height: 42px;
+  }
+
+  /* Mobile Dropdown positioning fixes */
+  .ant-picker-dropdown,
+  .ant-select-dropdown {
+    position: fixed !important;
+    z-index: 10007 !important; /* Match desktop z-index */
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    width: 90% !important;
+    left: 5% !important;
+    background-color: #ffffff !important;
+  }
+
+  /* Mobile Amenities Grid */
+  .amenities-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .amenity-card {
+    padding: 12px;
+  }
+  
+  .amenity-icon {
+    font-size: 24px;
+  }
+  
+  .amenity-label {
+    font-size: 12px;
+  }
+}
+
+/* Intermediate Stops - Better Mobile Layout */
+.intermediate-stop-card {
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.intermediate-stop-card .ant-card-body {
+  padding: 16px;
+}
+
+.remove-button-container {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  padding-bottom: 24px;
+}
+
+.remove-intermediate-stop {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* Mobile-specific intermediate stops styling */
+@media (max-width: 700px) {
+  .intermediate-stop-card {
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+
+  .intermediate-stop-card .ant-card-body {
+    padding: 16px 12px;
+  }
+
+  /* Mobile layout for intermediate stops */
+  .mobile-intermediate-stop .ant-row {
+    margin: 0 !important;
+  }
+
+  .mobile-intermediate-stop .ant-col {
+    padding: 0 4px !important;
+    margin-bottom: 12px;
+  }
+
+  /* Responsive grid for intermediate stops */
+  .desktop-intermediate-layout {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  /* Mobile form items in intermediate stops */
+  .mobile-intermediate-stop .ant-form-item {
+    margin-bottom: 12px;
+  }
+
+  .mobile-intermediate-stop .ant-form-item-label {
+    padding-bottom: 4px;
+  }
+
+  .mobile-intermediate-stop .ant-form-item-label > label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  /* Mobile inputs in intermediate stops */
+  .mobile-intermediate-stop .ant-input,
+  .mobile-intermediate-stop .ant-input-number,
+  .mobile-intermediate-stop .ant-picker {
+    height: 40px;
+    font-size: 15px;
+    border-radius: 6px;
+  }
+
+  /* Remove button on mobile */
+  .remove-button-col {
+    order: 999;
+    margin-top: 8px;
+  }
+
+  .remove-button-container {
+    padding-bottom: 0;
+    justify-content: center;
+  }
+
+  .remove-intermediate-stop {
+    width: 100%;
+    justify-content: center;
+    height: 36px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    font-weight: 500;
+  }
+
+  .remove-intermediate-stop:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+  }
+
+  /* Add intermediate stop button on mobile */
+  .mobile-intermediate-stop + .ant-btn {
+    margin-top: 16px;
+    height: 44px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+}
+
+/* Tablet responsive - 480px to 700px */
+@media (max-width: 700px) and (min-width: 481px) {
+  .desktop-intermediate-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .mobile-intermediate-stop .ant-col:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .remove-button-col {
+    grid-column: 1 / -1;
+    order: 999;
+  }
+}
+
+/* Very small screens - single column */
+@media (max-width: 480px) {
+  .intermediate-stop-card {
+    margin-bottom: 16px;
+  }
+
+  .intermediate-stop-card .ant-card-body {
+    padding: 12px;
+  }
+
+  .desktop-intermediate-layout {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .mobile-intermediate-stop .ant-form-item {
+    margin-bottom: 10px;
+  }
+
+  .mobile-intermediate-stop .ant-input,
+  .mobile-intermediate-stop .ant-input-number,
+  .mobile-intermediate-stop .ant-picker {
+    height: 38px;
+    font-size: 14px;
+  }
+
+  .remove-intermediate-stop {
+    height: 34px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile Form Actions */
+.form-actions {
+  padding: 16px;
+  flex-direction: column;
+  gap: 12px;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-actions .ant-btn {
+  width: 100% !important;
+  height: 44px !important;
+  font-size: 16px !important;
+  margin: 0 !important;
+}
+
+/* Mobile Modal Header */
+.bus-form-modal .ant-modal-header {
+  padding: 16px 20px;
+}
+
+.modal-header .ant-typography {
+  font-size: 18px !important;
+}
+
+/* Extra small screens - 480px and below */
+@media (max-width: 480px) {
+  .bus-form-modal {
+    width: 98% !important;
+    margin: 0 4px;
+  }
+  
+  .bus-form-container {
+    padding: 16px;
+  }
+  
+  .step-content {
+    padding: 16px 12px;
+  }
+
+  /* Single column layout on very small screens */
+  .amenities-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Smaller steps on mobile */
+  .ant-steps {
+    padding: 12px 8px;
+  }
+  
+  .ant-steps-item-title {
+    font-size: 11px;
+  }
+  
+  .ant-steps-item-icon {
+    width: 24px;
+    height: 24px;
+    line-height: 22px;
+    font-size: 12px;
+  }
+
+  /* Mobile intermediate stops - single column */
+  .bus-form-modal .ant-row .ant-col {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* Smaller form elements */
+  .bus-form-modal .ant-input,
+  .bus-form-modal .ant-input-number,
+  .bus-form-modal .ant-picker {
+    height: 40px !important;
+    font-size: 15px !important;
+  }
+
+  .step-header .ant-typography-title {
+    font-size: 18px !important;
+  }
+}

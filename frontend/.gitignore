@@ -1,0 +1,133 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ===== ADDED FOR BUS BOOKING PROJECT =====
+
+# Environment Variables (CRITICAL - Contains DB credentials, JWT secrets)
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+*.env
+
+# Build directories
+build/
+/build
+/out
+/.next
+
+# Database files (if storing locally)
+*.sql
+*.sqlite
+*.db
+*.dump
+
+# Uploads directory (user uploaded files)
+uploads/
+public/uploads/
+temp/
+tmp/
+
+# Test coverage
+coverage/
+.nyc_output
+*.lcov
+.jest-cache/
+
+# Cache directories
+.cache/
+.parcel-cache
+.eslintcache
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# OS specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Spotlight-V100
+.Trashes
+
+# Optional npm cache
+.npm
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Serverless
+.serverless/
+
+# TypeScript
+*.tsbuildinfo
+.tsbuildinfo
+
+# Certificates and keys
+*.pem
+*.key
+*.cert
+*.crt
+certificates/
+secrets/
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# MongoDB dumps
+dump/
+*.bson
+
+# Sensitive data
+credentials/
+.secret
+*.secret
+
+# Firebase (if used)
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Debug
+debug.log
+*.debug
+
+# Documentation builds
+docs/_build/
+
+# Storybook
+storybook-static/

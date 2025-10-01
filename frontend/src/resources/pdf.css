@@ -1,0 +1,376 @@
+/* Compact PDF Styles for One Page Layout */
+.pdf-ticket {
+    max-width: 595pt;
+    height: 842pt;
+    margin: 0 auto;
+    padding: 15pt;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.2;
+    color: #333;
+    box-sizing: border-box;
+    background: white;
+    font-size: 9pt;
+}
+
+/* PDF Header - Horizontal Layout */
+.pdf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15pt;
+    padding-bottom: 8pt;
+    border-bottom: 2pt solid #0066cc;
+}
+
+.pdf-header-left h2 {
+    margin: 0 0 4pt 0;
+    color: #0066cc;
+    font-size: 20pt;
+    font-weight: bold;
+    letter-spacing: 1pt;
+}
+
+.pdf-company-info {
+    margin: 0;
+}
+
+.pdf-company-info h3 {
+    margin: 0 0 2pt 0;
+    color: #1f2937;
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+.pdf-company-info p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 8pt;
+    line-height: 1.1;
+}
+
+.pdf-header-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4pt;
+}
+
+.pdf-booking-id {
+    background: #f3f4f6;
+    padding: 6pt 10pt;
+    border-radius: 4pt;
+    border: 1pt solid #d1d5db;
+}
+
+.pdf-id-label {
+    display: block;
+    font-size: 7pt;
+    color: #6b7280;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+}
+
+.pdf-id-value {
+    display: block;
+    font-size: 10pt;
+    color: #1f2937;
+    font-weight: bold;
+    font-family: monospace;
+    margin-top: 2pt;
+}
+
+.pdf-status {
+    font-size: 11pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+}
+
+/* Main Content - Two Column Layout */
+.pdf-main-content {
+    display: flex;
+    gap: 20pt;
+    margin-bottom: 15pt;
+    min-height: 600pt;
+}
+
+.pdf-left-column {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 12pt;
+}
+
+.pdf-right-column {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+}
+
+/* PDF Sections */
+.pdf-section {
+    border: 1pt solid #e5e7eb;
+    border-radius: 6pt;
+    padding: 10pt;
+    background: #fafbfc;
+}
+
+.pdf-section h4 {
+    margin: 0 0 8pt 0;
+    color: #1f2937;
+    font-size: 11pt;
+    font-weight: bold;
+    border-bottom: 1pt solid #e5e7eb;
+    padding-bottom: 4pt;
+}
+
+/* Journey Details Styles */
+.pdf-journey-header {
+    text-align: center;
+    margin-bottom: 8pt;
+    font-size: 10pt;
+    color: #1f2937;
+}
+
+.pdf-route-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8pt;
+    background: white;
+    padding: 8pt;
+    border-radius: 4pt;
+    border: 1pt solid #e5e7eb;
+}
+
+.pdf-route-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.pdf-city {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 2pt;
+}
+
+.pdf-time {
+    font-size: 9pt;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 2pt 6pt;
+    border-radius: 3pt;
+}
+
+.pdf-route-arrow {
+    font-size: 16pt;
+    color: #0066cc;
+    font-weight: bold;
+    margin: 0 8pt;
+}
+
+.pdf-date {
+    text-align: center;
+    font-size: 9pt;
+    color: #1f2937;
+}
+
+/* Info Grid for Passenger Details */
+.pdf-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6pt;
+}
+
+.pdf-info-item {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 6pt;
+    border-radius: 3pt;
+    border: 1pt solid #e5e7eb;
+}
+
+.pdf-info-label {
+    font-size: 7pt;
+    color: #6b7280;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.3pt;
+    margin-bottom: 2pt;
+}
+
+.pdf-info-value {
+    font-size: 9pt;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.pdf-seat-numbers {
+    color: #059669;
+    font-weight: bold;
+}
+
+.pdf-price {
+    color: #dc2626;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+.pdf-booking-date {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 6pt;
+    border-radius: 3pt;
+    border: 1pt solid #e5e7eb;
+}
+
+/* Compact Seat Map */
+.pdf-seat-map-compact {
+    background: white;
+    border-radius: 6pt;
+    padding: 8pt;
+    border: 1pt solid #e5e7eb;
+}
+
+.pdf-bus-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2pt;
+    background: #ffffff;
+    padding: 8pt;
+    border-radius: 4pt;
+    border: 1pt solid #d1d5db;
+    max-width: 140pt;
+    margin: 0 auto 8pt auto;
+    position: relative;
+}
+
+.pdf-bus-layout::before {
+    content: 'FRONT';
+    position: absolute;
+    top: -6pt;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0066cc;
+    color: white;
+    padding: 2pt 6pt;
+    border-radius: 2pt;
+    font-size: 6pt;
+    font-weight: bold;
+    letter-spacing: 0.5pt;
+}
+
+.pdf-bus-row {
+    display: flex;
+    justify-content: center;
+    gap: 3pt;
+}
+
+.pdf-seat {
+    width: 12pt;
+    height: 12pt;
+    background: #e5e7eb;
+    border-radius: 2pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6pt;
+    font-weight: bold;
+    color: #6b7280;
+    border: 0.5pt solid #d1d5db;
+}
+
+.pdf-seat-selected {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-color: #047857;
+    box-shadow: 0 1pt 2pt rgba(16, 185, 129, 0.3);
+}
+
+.pdf-aisle {
+    width: 8pt;
+    background: transparent;
+    position: relative;
+}
+
+.pdf-aisle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1pt;
+    height: 8pt;
+    background: linear-gradient(to bottom, transparent, #d1d5db, transparent);
+}
+
+/* Legend */
+.pdf-legend {
+    display: flex;
+    justify-content: center;
+    gap: 12pt;
+    font-size: 7pt;
+    margin-top: 6pt;
+}
+
+.pdf-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 3pt;
+}
+
+.pdf-legend-seat {
+    width: 8pt;
+    height: 8pt;
+    border-radius: 1pt;
+    display: inline-block;
+}
+
+.pdf-legend-available {
+    background: #e5e7eb;
+    border: 0.5pt solid #d1d5db;
+}
+
+.pdf-legend-selected {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Footer */
+.pdf-footer {
+    border-top: 1pt solid #e5e7eb;
+    padding-top: 8pt;
+    margin-top: auto;
+}
+
+.pdf-footer-content {
+    text-align: center;
+    background: #f8fafc;
+    padding: 8pt;
+    border-radius: 6pt;
+    border: 1pt dashed #d1d5db;
+}
+
+.pdf-footer p {
+    margin: 2pt 0;
+    color: #6b7280;
+    font-size: 8pt;
+    line-height: 1.3;
+}
+
+.pdf-footer p:first-child {
+    color: #1f2937;
+    font-weight: bold;
+}
+
+/* Ensure no page breaks */
+.pdf-ticket * {
+    page-break-inside: avoid;
+}

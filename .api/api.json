@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "lenco-api",
+      "source": "@lenco-api/v1.0#enwajgm1esfxzn",
+      "integrity": "sha512-xvLUOaKJ/fE9SmX1QcO6Ikx+/sm1EoW/gUJP43EoZ55bI2D4SZsLLJQzW/EkP0YlLXpeykDGe5ifv3RdSYLTMA==",
+      "installerVersion": "6.1.3"
+    }
+  ]
+}
