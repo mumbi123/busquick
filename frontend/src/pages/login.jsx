@@ -8,7 +8,7 @@ import { setUser } from '../redux/usersSlice';
 import '../resources/global.css';
 import '../resources/loginregister.css';
 
-const baseURL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
+const baseURL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://busquick.onrender.com';
 
 function Login({ onSuccess }) {
   const navigate = useNavigate();
