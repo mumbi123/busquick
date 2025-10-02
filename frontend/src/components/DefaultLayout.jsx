@@ -9,7 +9,7 @@ import '../resources/layout.css';
 import '../resources/loginregister.css';
 import Footer from './footer';
 
-const BASE_URL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://busquick.onrender.com/';
+const BASE_URL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://busquick.onrender.com';
 const ADMIN_ROLE = 'admin'; 
 const USER_ROLE = 'user';
 const VENDOR_ROLE = 'vendor';  
