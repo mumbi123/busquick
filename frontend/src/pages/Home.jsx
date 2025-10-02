@@ -27,7 +27,7 @@ function Home() {
   const [sortBy, setSortBy] = useState('');
   const navigate = useNavigate();
 
-  const baseURL = import.meta.env.NODE_ENV === 'development' ||'development'  ? 'http://localhost:5000' : '';
+  const baseURL = import.meta.env.NODE_ENV === 'development' ||'development'  ? 'http://localhost:5000' : 'https://busquick.onrender.com';
 
   const getBuses = async (date = '') => {
     try {
