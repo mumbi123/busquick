@@ -7,7 +7,7 @@ import { showLoading, hideLoading } from '../redux/alertsSlice';
 import axios from 'axios';
 import '../resources/footer.css';
 
-const baseURL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
+const baseURL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://busquick.onrender.com';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
