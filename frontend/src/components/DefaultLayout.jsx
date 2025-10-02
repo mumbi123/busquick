@@ -9,6 +9,7 @@ import '../resources/layout.css';
 import '../resources/loginregister.css';
 import Footer from './footer';
 
+const BASE_URL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
 const ADMIN_ROLE = 'admin'; 
 const USER_ROLE = 'user';
 const VENDOR_ROLE = 'vendor';  
@@ -94,7 +95,7 @@ function DefaultLayout({ children }) {
   const handleLogin = async (values) => {
     try {
       dispatch(showLoading());
-      const { data } = await axios.post('http://localhost:5000/api/users/login', values);
+      const { data } = await axios.post(`${{BASE_URL}}/api/users/login`, values);
       dispatch(hideLoading());
 
       if (!data.success) return message.error(data.message);
@@ -118,7 +119,7 @@ function DefaultLayout({ children }) {
   const handleRegister = async (values) => {
     try {
       dispatch(showLoading());
-      const response = await axios.post('http://localhost:5000/api/users/register', values);
+      const response = await axios.post(`${{BASE_URL}}/api/users/register`, values);
       dispatch(hideLoading());
 
       if (response.data.success) {

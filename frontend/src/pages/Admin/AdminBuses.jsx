@@ -259,7 +259,7 @@ function AdminBuses() {
               <Option value="Running">Running</Option>
               <Option value="Completed">Completed</Option>
               <Option value="Cancelled">Cancelled</Option>
-            </Select>
+            </Select> 
           </div>
         </div>
 

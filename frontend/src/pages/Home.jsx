@@ -27,13 +27,15 @@ function Home() {
   const [sortBy, setSortBy] = useState('');
   const navigate = useNavigate();
 
+  const baseURL = import.meta.env.NODE_ENV === 'development' ||'development'  ? 'http://localhost:5000' : '';
+
   const getBuses = async (date = '') => {
     try {
       setLoading(true);
       dispatch(showLoading());
       const config = {
         method: 'post',
-        url: 'http://localhost:5000/api/buses/get-all-buses',
+        url: `${baseURL}/api/buses/get-all-buses`,
         data: { ...(searchParams || {}) },
         headers: { 'Content-Type': 'application/json' },
       };

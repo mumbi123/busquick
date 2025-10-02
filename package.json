@@ -2,11 +2,12 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon backend/server.js",
-    "start": "node backend/server.js"
+    "start": "node backend/server.js",
+    "build": "npm --prefix frontend run build"
   },
   "dependencies": {
     "antd": "^5.25.2",
-    "axios": "^1.9.0",
+    "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",

@@ -7,6 +7,8 @@ import { showLoading, hideLoading } from '../redux/alertsSlice';
 import '../resources/global.css';
 import '../resources/loginregister.css';
 
+const baseURL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
+
 function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -14,7 +16,7 @@ function Register() {
   const onFinish = async (values) => {
     try {
       dispatch(showLoading());
-      const response = await axios.post('http://localhost:5000/api/users/register', values);
+      const response = await axios.post(`${baseURL}/api/users/register`, values);
       dispatch(hideLoading());
 
       if (response.data.success) {

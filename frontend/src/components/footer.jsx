@@ -7,6 +7,8 @@ import { showLoading, hideLoading } from '../redux/alertsSlice';
 import axios from 'axios';
 import '../resources/footer.css';
 
+const baseURL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
+
 function Footer() {
   const currentYear = new Date().getFullYear();
   const [isVendorModalVisible, setIsVendorModalVisible] = useState(false);
@@ -25,7 +27,7 @@ function Footer() {
   const onFinishVendorRegistration = async (values) => {
     try {
       dispatch(showLoading());
-      const response = await axios.post('http://localhost:5000/api/users/vendor-register', values);
+      const response = await axios.post(`${baseURL}/api/users/vendor-register`, values);
       dispatch(hideLoading());
 
       if (response.data.success) {

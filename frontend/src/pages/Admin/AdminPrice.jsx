@@ -25,7 +25,7 @@ function AdminPrice() {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
-  const columns = [
+  const columns = [ 
     { 
       title: 'Bus Name', 
       dataIndex: 'name',

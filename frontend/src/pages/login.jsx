@@ -8,6 +8,8 @@ import { setUser } from '../redux/usersSlice';
 import '../resources/global.css';
 import '../resources/loginregister.css';
 
+const baseURL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
+
 function Login({ onSuccess }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -15,7 +17,8 @@ function Login({ onSuccess }) {
   const onFinish = async (values) => {
     try {
       dispatch(showLoading());
-      const { data } = await axios.post('http://localhost:5000/api/users/login', values);
+      const response = await axios.post(`${baseURL}/api/users/login`, values);
+      const { data } = response;
       dispatch(hideLoading());
 
       if (!data.success) {

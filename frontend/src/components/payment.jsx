@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import '../resources/payment.css';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import .meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
 
 // Notification Component
 const Notification = ({ message, type, onTryAgain, onCancel, show }) => {
@@ -15,7 +15,7 @@ const Notification = ({ message, type, onTryAgain, onCancel, show }) => {
       <div className={`notification ${type}`}>
         <div className="notification-content">
           <div className="notification-icon">
-            {type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️'}
+            {type === 'error' ? '' : type === 'success' ? '✅' : 'ℹ️'}
           </div>
           <p>{message}</p>
           <div className="notification-actions">

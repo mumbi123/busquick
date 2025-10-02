@@ -7,6 +7,8 @@ import { showLoading, hideLoading } from '../redux/alertsSlice';
 import '../resources/global.css';
 import '../resources/loginregister.css';
 
+const baseURL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
+
 function VendorRegister() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -16,7 +18,7 @@ function VendorRegister() {
       dispatch(showLoading());
       // Add userType: 'vendor' to the payload
       const payload = { ...values, userType: 'vendor' };
-      const response = await axios.post('http://localhost:5000/api/users/vendor-register', payload);
+      const response = await axios.post(`${baseURL}/api/users/vendor-register`, payload);
       dispatch(hideLoading());
 
       if (response.data.success) {
