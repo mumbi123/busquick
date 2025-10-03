@@ -7,6 +7,25 @@ import jwt from 'jsonwebtoken';
 
 const router = Router();
 
+/* ───────────── GET all users (public or adjust access as needed) ───────────── */
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+    
+    res.send({
+      success: true,
+      message: 'Users fetched successfully',
+      data: users
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).send({ 
+      success: false, 
+      message: 'Error fetching users' 
+    });
+  }
+});
+
 /* ───────────── register ───────────── */
 router.post('/register', async (req, res) => {
   try {
@@ -243,7 +262,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       });
     }
 
-    res.send({
+    res.send({ 
       success: true,
       message: 'User deleted successfully'
     });
