@@ -4,6 +4,26 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
+// GET all prices (public - lists all prices; use /get-all-prices POST for filtered/paginated)
+router.get('/', async (req, res) => {
+  try {
+    const prices = await Price.find({}).sort({ name: 1, from: 1 }).lean();
+    
+    res.json({ 
+      success: true, 
+      data: prices,
+      count: prices.length,
+      message: prices.length > 0 ? 'All prices fetched successfully' : 'No prices found'
+    });
+  } catch (error) {
+    console.error('Error fetching prices:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch prices. Please try again.' 
+    });
+  }
+});
+
 // Validation helper function
 const validatePriceData = (name, from, to, price) => {
   const errors = [];
