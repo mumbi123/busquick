@@ -4,6 +4,20 @@ import axios from 'axios';
 
 const router = express.Router();
 
+// Root endpoint for testing/info (public)
+router.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Payment API is running! Available endpoints:',
+    endpoints: [
+      'GET /api/payment/verify/:reference - Verify payment status',
+      'POST /api/payment/submit-otp - Submit OTP for mobile money',
+      'GET /api/payment/channels - Get available payment channels',
+      'GET /api/payment/test - Test Lenco API connection'
+    ]
+  });
+});
+
 // Lenco API configuration from .env
 const LENCO_CONFIG = {
   baseURL: process.env.LENCO_BASE_URL || 'https://api.lenco.co/access/v2',
@@ -13,7 +27,7 @@ const LENCO_CONFIG = {
 
 // Verify payment status by reference
 router.get('/verify/:reference', async (req, res) => {
-  try {
+  try { 
     const { reference } = req.params;
     console.log('Verifying payment with reference:', reference);
     if (!reference) {
