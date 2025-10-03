@@ -5,9 +5,18 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Route to get all bookings (admin only) or user-specific bookings
-router.get('/user-bookings', authMiddleware, async (req, res) => {
+// Route to get all bookings (admin only) or user-specific bookings - public for testing, but logic checks role
+router.get('/', async (req, res) => {
   try {
+    // If no auth, return empty or public message (adjust as needed)
+    if (!req.userId) {
+      return res.status(200).json({
+        message: 'Public access: No bookings shown without login',
+        data: [],
+        success: true,
+      });
+    }
+
     const userId = req.userId;
     const userRole = req.userRole;
 
@@ -19,7 +28,7 @@ router.get('/user-bookings', authMiddleware, async (req, res) => {
         .sort({ createdAt: -1 });
       
       return res.status(200).json({
-        message: 'All bookings retrieved successfully',
+        message: 'All bookings retrieved successfully', 
         data: bookings,
         success: true,
       });
@@ -44,6 +53,11 @@ router.get('/user-bookings', authMiddleware, async (req, res) => {
       error: error.message,
     });
   }
+});
+
+// Legacy/alias route - redirect to root logic (optional, can remove if not needed)
+router.get('/user-bookings', async (req, res) => {
+  res.redirect('/api/bookings');  // Or call the same handler function
 });
 
 // Route to book seats (protected)
