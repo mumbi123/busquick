@@ -9,20 +9,20 @@ import '../resources/layout.css';
 import '../resources/loginregister.css';
 import Footer from './footer';
 
-const BASE_URL = import.meta.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://busquick.onrender.com';
-const ADMIN_ROLE = 'admin'; 
+const BASE_URL = 'https://busquick.onrender.com';
+const ADMIN_ROLE = 'admin';
 const USER_ROLE = 'user';
-const VENDOR_ROLE = 'vendor';  
+const VENDOR_ROLE = 'vendor';
 
 function DefaultLayout({ children }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.users);
-  
+
   // Dropdown states
   const [showAuthDropdown, setShowAuthDropdown] = useState(false);
-  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
-  const [activeAuthItem, setActiveAuthItem] = useState(null); // Track which auth item was clicked
+  const [authMode, setAuthMode] = useState('login');
+  const [activeAuthItem, setActiveAuthItem] = useState(null);
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
   const dropdownRef = useRef(null);
@@ -33,7 +33,7 @@ function DefaultLayout({ children }) {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) { 
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowAuthDropdown(false);
         setActiveAuthItem(null);
       }
@@ -43,11 +43,11 @@ function DefaultLayout({ children }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Guest menu (when not logged in)
+  // Guest menu
   const guestMenu = [
     { path: '/', icon: 'ri-home-4-line', name: 'Home' },
     { path: '/login', icon: 'ri-login-circle-line', name: 'Login', isAuth: true },
-    { path: '/register', icon: 'ri-user-add-line', name: 'Register', isAuth: true }
+    { path: '/register', icon: 'ri-user-add-line', name: 'Register', isAuth: true },
   ];
 
   const adminMenu = [
@@ -56,26 +56,25 @@ function DefaultLayout({ children }) {
     { path: '/admin/buses', icon: 'ri-bus-line', name: 'Buses' },
     { path: '/admin/prices', icon: 'ri-money-dollar-circle-line', name: 'Prices' },
     { path: '/admin/users', icon: 'ri-user-line', name: 'Users' },
-    { path: '/logout', icon: 'ri-logout-circle-line', name: 'Logout' }
+    { path: '/logout', icon: 'ri-logout-circle-line', name: 'Logout' },
   ];
 
   const vendorMenu = [
     { path: '/admin', icon: 'ri-home-4-line', name: 'Home' },
     { path: '/bookings', icon: 'ri-file-list-line', name: 'Bookings' },
     { path: '/admin/buses', icon: 'ri-bus-line', name: 'Buses' },
-    { path: '/logout', icon: 'ri-logout-circle-line', name: 'Logout' }
+    { path: '/logout', icon: 'ri-logout-circle-line', name: 'Logout' },
   ];
 
   const userMenu = [
     { path: '/', icon: 'ri-home-4-line', name: 'Home' },
     { path: '/bookings', icon: 'ri-file-list-line', name: 'Bookings' },
-    { path: '/logout', icon: 'ri-logout-circle-line', name: 'Logout' }
+    { path: '/logout', icon: 'ri-logout-circle-line', name: 'Logout' },
   ];
 
-  // Determine which menu to show based on user authentication and role
   const getMenu = () => {
     if (!user) return guestMenu;
-    
+
     switch (user.role) {
       case ADMIN_ROLE:
         return adminMenu;
@@ -91,11 +90,11 @@ function DefaultLayout({ children }) {
   const menu = getMenu();
   const active = window.location.pathname;
 
-  // Handle login form submission
+  // ✅ Fixed login API call
   const handleLogin = async (values) => {
     try {
       dispatch(showLoading());
-      const { data } = await axios.post(`${{BASE_URL}}/api/users/login`, values);
+      const { data } = await axios.post(`${BASE_URL}/api/users/login`, values);
       dispatch(hideLoading());
 
       if (!data.success) return message.error(data.message);
@@ -115,11 +114,11 @@ function DefaultLayout({ children }) {
     }
   };
 
-  // Handle register form submission
+  // ✅ Fixed register API call
   const handleRegister = async (values) => {
     try {
       dispatch(showLoading());
-      const response = await axios.post(`${{BASE_URL}}/api/users/register`, values);
+      const response = await axios.post(`${BASE_URL}/api/users/register`, values);
       dispatch(hideLoading());
 
       if (response.data.success) {
@@ -140,7 +139,6 @@ function DefaultLayout({ children }) {
 
   const handleMenuClick = (item) => {
     if (item.isAuth && !user) {
-      // Handle auth dropdown
       const newAuthMode = item.path === '/register' ? 'register' : 'login';
       setAuthMode(newAuthMode);
       setActiveAuthItem(item.path);
@@ -149,7 +147,7 @@ function DefaultLayout({ children }) {
       localStorage.removeItem('token');
       navigate('/');
       message.success('Logged out successfully');
-      window.location.reload(); // Refresh to reset user state
+      window.location.reload();
     } else if (item.path === '/bookings' && !user) {
       message.warning('Please login to view your bookings');
       setAuthMode('login');
@@ -178,14 +176,13 @@ function DefaultLayout({ children }) {
           <div className="logo-section">
             <h1 className="logo">BusQuick</h1>
             <h6 className="role">
-              {user ? `${user.role === 'vendor' ? 'Operator' : user.role}: ${user.name}` : 'Welcome, Guest'}
+              {user
+                ? `${user.role === 'vendor' ? 'Operator' : user.role}: ${user.name}`
+                : 'Welcome, Guest'}
             </h6>
           </div>
 
-          <button 
-            className="mobile-menu-btn" 
-            onClick={() => setIsSidebarOpen(true)}
-          >
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
             <i className="ri-menu-line"></i>
           </button>
 
@@ -205,9 +202,9 @@ function DefaultLayout({ children }) {
         </div>
 
         {/* Sidebar Overlay */}
-        <div 
-          className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`} 
-          onClick={() => setIsSidebarOpen(false)} 
+        <div
+          className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
+          onClick={() => setIsSidebarOpen(false)}
         />
 
         {/* Sidebar */}
@@ -227,33 +224,30 @@ function DefaultLayout({ children }) {
           ))}
         </div>
 
-        {/* Single Auth Dropdown - Moved outside the menu loop */}
+        {/* Auth Dropdown */}
         {showAuthDropdown && (
           <>
-            <div 
+            <div
               className={`auth-overlay ${showAuthDropdown ? 'show' : ''}`}
               onClick={closeAuthDropdown}
             />
-            <div 
+            <div
               ref={dropdownRef}
               className={`auth-dropdown ${showAuthDropdown ? 'show' : ''}`}
               style={{
                 position: 'fixed',
-                top: '80px', // Adjust based on your header height
+                top: '80px',
                 right: '20px',
-                zIndex: 1000
+                zIndex: 1000,
               }}
             >
               <div className="auth-dropdown-card">
-                <button 
-                  className="auth-close"
-                  onClick={closeAuthDropdown}
-                >
+                <button className="auth-close" onClick={closeAuthDropdown}>
                   ×
                 </button>
-                
+
                 <h3>{authMode === 'login' ? 'Welcome Back' : 'Join BusQuick'}</h3>
-                
+
                 {authMode === 'login' ? (
                   <Form form={loginForm} onFinish={handleLogin} layout="vertical">
                     <div className="auth-form-group">
@@ -261,33 +255,25 @@ function DefaultLayout({ children }) {
                         name="email"
                         rules={[{ required: true, type: 'email', message: 'Please enter a valid email!' }]}
                       >
-                        <input 
-                          className="auth-input"
-                          placeholder="Enter your email"
-                          type="email"
-                        />
+                        <input className="auth-input" placeholder="Enter your email" type="email" />
                       </Form.Item>
                     </div>
-                    
+
                     <div className="auth-form-group">
                       <Form.Item
                         name="password"
                         rules={[{ required: true, message: 'Please enter your password!' }]}
                       >
-                        <input 
-                          className="auth-input"
-                          placeholder="Enter your password"
-                          type="password"
-                        />
+                        <input className="auth-input" placeholder="Enter your password" type="password" />
                       </Form.Item>
                     </div>
-                    
+
                     <button type="submit" className="auth-btn">
                       Sign In
                     </button>
-                    
+
                     <div className="auth-switch">
-                      Don't have an account? 
+                      Don't have an account?
                       <button type="button" onClick={switchAuthMode}>
                         Sign up
                       </button>
@@ -300,49 +286,41 @@ function DefaultLayout({ children }) {
                         name="name"
                         rules={[{ required: true, message: 'Please enter your name!' }]}
                       >
-                        <input 
-                          className="auth-input"
-                          placeholder="Enter your full name"
-                          type="text"
-                        />
+                        <input className="auth-input" placeholder="Enter your full name" type="text" />
                       </Form.Item>
                     </div>
-                    
+
                     <div className="auth-form-group">
                       <Form.Item
                         name="email"
                         rules={[{ required: true, type: 'email', message: 'Please enter a valid email!' }]}
                       >
-                        <input 
-                          className="auth-input"
-                          placeholder="Enter your email"
-                          type="email"
-                        />
+                        <input className="auth-input" placeholder="Enter your email" type="email" />
                       </Form.Item>
                     </div>
-                    
+
                     <div className="auth-form-group">
                       <Form.Item
                         name="password"
                         rules={[
                           { required: true, message: 'Please enter your password!' },
-                          { min: 6, message: 'Password must be at least 6 characters' }
+                          { min: 6, message: 'Password must be at least 6 characters' },
                         ]}
                       >
-                        <input 
+                        <input
                           className="auth-input"
                           placeholder="Create a password (min 6 chars)"
                           type="password"
                         />
                       </Form.Item>
                     </div>
-                    
+
                     <button type="submit" className="auth-btn">
                       Create Account
                     </button>
-                    
+
                     <div className="auth-switch">
-                      Already have an account? 
+                      Already have an account?
                       <button type="button" onClick={switchAuthMode}>
                         Sign in
                       </button>
@@ -351,16 +329,14 @@ function DefaultLayout({ children }) {
                 )}
               </div>
             </div>
-          </> 
+          </>
         )}
 
         <div className="body">
-          <div className="content">
-            {children} 
-          </div>
+          <div className="content">{children}</div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }
