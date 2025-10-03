@@ -4,6 +4,147 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
+// GET all buses (public - lists all active buses; use /get-all-buses POST for search)
+router.get('/', async (req, res) => {
+  try {
+    const now = new Date();
+    const query = {
+      isActive: { $ne: false },
+      status: { $ne: 'Cancelled' }
+    };
+
+    // Filter out old completed buses
+    const buses = await Bus.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          number: { $first: "$number" },
+          capacity: { $first: "$capacity" },
+          from: { $first: "$from" },
+          to: { $first: "$to" },
+          journeydate: { $first: "$journeydate" },
+          arrivaldate: { $first: "$arrivaldate" },
+          departure: { $first: "$departure" },
+          arrival: { $first: "$arrival" },
+          price: { $first: "$price" },
+          drivername: { $first: "$drivername" },
+          pickup: { $first: "$pickup" },
+          dropoff: { $first: "$dropoff" },
+          amenities: { $first: "$amenities" },
+          status: { $first: "$status" },
+          seatsBooked: { $first: "$seatsBooked" },
+          isActive: { $first: "$isActive" },
+          busGroupId: { $first: "$busGroupId" },
+          isSegment: { $first: "$isSegment" },
+          parentBus: { $first: "$parentBus" },
+          createdAt: { $first: "$createdAt" },
+          updatedAt: { $first: "$updatedAt" }
+        }
+      },
+      {
+        $sort: { 
+          journeydate: 1, 
+          departure: 1,
+          _id: 1
+        }
+      }
+    ]);
+
+    // Filter out buses to delete: if now > (journeydate + arrival time + 1 hour)
+    const busesToKeep = buses.filter(bus => {
+      const journeyDate = new Date(bus.journeydate);
+      const arrivalTimeMatch = bus.arrival ? bus.arrival.match(/(\d{1,2}):(\d{2})/) : null;
+      if (!arrivalTimeMatch) return true;  // If no arrival, keep it
+      const arrivalHours = parseInt(arrivalTimeMatch[1]);
+      const arrivalMins = parseInt(arrivalTimeMatch[2]);
+      const fullArrival = new Date(journeyDate);
+      fullArrival.setHours(arrivalHours, arrivalMins, 0, 0);
+      const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);  // +1 hour
+      return now < deleteAfter;
+    });
+
+    // FIXED: Sync seats across bus groups - Get shared seat inventory for each bus group
+    const busGroupIds = [...new Set(busesToKeep.map(bus => bus.busGroupId).filter(Boolean))];
+    const groupSeatsMap = {};
+    
+    // For each group, find the authoritative source of booked seats (main bus or segment with most bookings)
+    for (const groupId of busGroupIds) {
+      const groupBuses = await Bus.find({ busGroupId: groupId });
+      let maxBookedSeats = [];
+      
+      // Find the bus in the group with the most booked seats (authoritative source)
+      for (const bus of groupBuses) {
+        if (bus.seatsBooked && bus.seatsBooked.length > maxBookedSeats.length) {
+          maxBookedSeats = bus.seatsBooked;
+        }
+      }
+      
+      groupSeatsMap[groupId] = maxBookedSeats;
+    }
+
+    // Now calculate available seats for each bus using shared inventory
+    const busesWithAvailableSeats = busesToKeep.map(bus => {
+      // Use shared seat inventory for this bus group
+      const sharedSeatsBooked = groupSeatsMap[bus.busGroupId] || bus.seatsBooked || [];
+      const seatsBookedCount = sharedSeatsBooked.length;
+      const availableSeats = bus.capacity - seatsBookedCount;
+      const isFullyBooked = seatsBookedCount >= bus.capacity;
+
+      // Calculate full departure datetime
+      const journeyDate = new Date(bus.journeydate);
+      const depTimeMatch = bus.departure ? bus.departure.match(/(\d{1,2}):(\d{2})/) : null;
+      let bookingDisabled = false;
+      if (depTimeMatch) {
+        const depHours = parseInt(depTimeMatch[1]);
+        const depMins = parseInt(depTimeMatch[2]);
+        const fullDeparture = new Date(journeyDate);
+        fullDeparture.setHours(depHours, depMins, 0, 0);
+        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);  // -30 min
+        bookingDisabled = now >= bookingClose;
+      }
+
+      return {
+        ...bus,
+        seatsBooked: sharedSeatsBooked, // Use shared seat inventory
+        availableSeats, 
+        isFullyBooked,
+        bookingDisabled
+      };
+    });
+
+    // Additional duplicate check
+    const uniqueBusesMap = new Map();
+    busesWithAvailableSeats.forEach(bus => {
+      if (!uniqueBusesMap.has(bus._id.toString())) {
+        uniqueBusesMap.set(bus._id.toString(), bus);
+      }
+    });
+    
+    const finalBuses = Array.from(uniqueBusesMap.values());
+
+    console.log('--- BACKEND DEBUG: All Buses Response ---');
+    console.log('Unique buses count:', finalBuses.length);
+
+    return res.status(200).send({
+      success: true,
+      data: finalBuses,
+      message: finalBuses.length > 0
+        ? 'All active buses fetched successfully'
+        : 'No active buses found',
+      totalCount: finalBuses.length
+    });
+
+  } catch (error) {
+    console.error('Error fetching all buses:', error);
+    res.status(500).send({
+      success: false,
+      message: 'Internal server error while fetching buses'
+    });
+  }
+});
+
 // ADD a new bus (admin only - requires auth)
 router.post('/add-bus', authMiddleware, async (req, res) => {
   try {
