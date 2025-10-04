@@ -14,7 +14,7 @@ const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: 'http://localhost:5173','https://busquick-frontend-final.onrender.com'  // Allow React app to connect
+    origin: ['http://localhost:5173', 'https://busquick-frontend-final.onrender.com'],  // Fixed: array syntax
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -27,7 +27,7 @@ app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/buses', busesRoute);
 app.use('/api/booking', bookingRoute);
-app.use('/api/prices', priceRoute)
+app.use('/api/prices', priceRoute);
 app.use('/api/bookings', bookingRoute);
 app.use('/api/payment', paymentRoutes);
 
