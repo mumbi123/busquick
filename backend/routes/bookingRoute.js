@@ -5,27 +5,23 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Route to get all bookings (admin only) or user-specific bookings - public for testing, but logic checks role
-router.get('/', async (req, res) => {
+// Route to get all bookings (admin only) or user-specific bookings - PROTECTED
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    // If no auth, return empty or public message (adjust as needed)
-    if (!req.userId) {
-      return res.status(200).json({
-        message: 'Public access: No bookings shown without login',
-        data: [],
-        success: true,
-      });
-    }
-
     const userId = req.userId;
     const userRole = req.userRole;
+
+    console.log('Fetching bookings for user:', userId, 'Role:', userRole);
 
     // If user is admin, fetch all bookings
     if (userRole === 'admin') {
       const bookings = await Booking.find()
         .populate('bus')
         .populate('user', 'name email')
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .lean(); // Use lean() for better performance
+      
+      console.log('Admin bookings found:', bookings.length);
       
       return res.status(200).json({
         message: 'All bookings retrieved successfully', 
@@ -38,7 +34,10 @@ router.get('/', async (req, res) => {
     const bookings = await Booking.find({ user: userId })
       .populate('bus')
       .populate('user', 'name email')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean(); // Use lean() for better performance
+
+    console.log('User bookings found:', bookings.length);
 
     res.status(200).json({
       message: 'User bookings retrieved successfully',
@@ -47,6 +46,7 @@ router.get('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching bookings:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       message: 'Failed to fetch bookings',
       success: false,
@@ -56,8 +56,30 @@ router.get('/', async (req, res) => {
 });
 
 // Legacy/alias route - redirect to root logic (optional, can remove if not needed)
-router.get('/user-bookings', async (req, res) => {
-  res.redirect('/api/bookings');  // Or call the same handler function
+router.get('/user-bookings', authMiddleware, async (req, res) => {
+  // Forward the request to the main bookings endpoint
+  try {
+    const userId = req.userId;
+    
+    const bookings = await Booking.find({ user: userId })
+      .populate('bus')
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.status(200).json({
+      message: 'User bookings retrieved successfully',
+      data: bookings,
+      success: true,
+    });
+  } catch (error) {
+    console.error('Error fetching user bookings:', error);
+    res.status(500).json({
+      message: 'Failed to fetch bookings',
+      success: false,
+      error: error.message,
+    });
+  }
 });
 
 // Route to book seats (protected)
@@ -70,6 +92,14 @@ router.post('/book-seat', authMiddleware, async (req, res) => {
     if (!bus || !seats || !transactionId || !totalPrice) {
       return res.status(400).json({
         message: 'Missing required fields',
+        success: false,
+      });
+    }
+
+    // Validate seats array
+    if (!Array.isArray(seats) || seats.length === 0) {
+      return res.status(400).json({
+        message: 'Seats must be a non-empty array',
         success: false,
       });
     }
