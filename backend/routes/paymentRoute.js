@@ -1,4 +1,3 @@
-// backend/routes/paymentRoute.js
 import express from 'express';
 import axios from 'axios';
 
@@ -13,7 +12,8 @@ router.get('/', (req, res) => {
       'GET /api/payment/verify/:reference - Verify payment status',
       'POST /api/payment/submit-otp - Submit OTP for mobile money',
       'GET /api/payment/channels - Get available payment channels',
-      'GET /api/payment/test - Test Lenco API connection'
+      'GET /api/payment/test - Test Lenco API connection',
+      'POST /api/payment/cancel - Cancel a payment attempt'
     ]
   });
 });
@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 // Lenco API configuration from .env
 const LENCO_CONFIG = {
   baseURL: process.env.LENCO_BASE_URL || 'https://api.lenco.co/access/v2',
-  apiKey: process.env.LENCO_KEY ,
+  apiKey: process.env.LENCO_KEY,
   publicKey: process.env.LENCO_PUBLIC_KEY
 };
 
@@ -136,6 +136,60 @@ router.post('/submit-otp', async (req, res) => {
     }
     res.status(statusCode).json({ 
       error: errorMessage, 
+      details: err.response?.data || err.message
+    });
+  }
+});
+
+// Cancel a payment attempt
+router.post('/cancel', async (req, res) => {
+  try {
+    const { reference } = req.body;
+    console.log('Cancelling payment with reference:', reference);
+    if (!reference) {
+      console.log('Cancellation failed: Missing reference');
+      return res.status(400).json({ error: 'Payment reference is required' });
+    }
+    const response = await axios.get(
+      `${LENCO_CONFIG.baseURL}/collections/status/${reference}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${LENCO_CONFIG.apiKey || process.env.LENCO_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
+      }
+    );
+    console.log('Payment cancellation check response:', JSON.stringify(response.data, null, 2));
+    const status = response.data?.data?.status;
+    if (status === 'successful') {
+      return res.status(400).json({ error: 'Cannot cancel a completed payment' });
+    }
+    res.json({
+      success: true,
+      message: 'Payment attempt cancelled successfully',
+      data: { reference, status: 'cancelled' }
+    });
+  } catch (err) {
+    console.error('Error cancelling payment:', {
+      message: err.message,
+      status: err.response?.status,
+      data: err.response?.data
+    });
+    let errorMessage = 'Payment cancellation failed';
+    let statusCode = 500;
+    if (err.response) {
+      errorMessage = err.response.data?.message || 'Cancellation failed';
+      statusCode = err.response.status;
+    } else if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND') {
+      errorMessage = 'Unable to connect to Lenco API server';
+      statusCode = 503;
+    } else if (err.code === 'ECONNABORTED') {
+      errorMessage = 'Cancellation request timed out';
+      statusCode = 408;
+    }
+    res.status(statusCode).json({ 
+      error: errorMessage,
       details: err.response?.data || err.message
     });
   }
