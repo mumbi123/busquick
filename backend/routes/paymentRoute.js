@@ -16,6 +16,7 @@ router.get('/', (req, res) => {
       'GET /api/payment/verify/:reference - Verify payment status',
       'POST /api/payment/submit-otp - Submit OTP for mobile money',
       'POST /api/payment/cancel/:reference - Cancel a payment',
+      'GET /api/payment/is-cancelled/:reference - Check if payment is cancelled',
       'GET /api/payment/channels - Get available payment channels',
       'GET /api/payment/test - Test Lenco API connection'
     ]
@@ -85,14 +86,23 @@ router.post('/cancel/:reference', async (req, res) => {
 
 // Check if payment is cancelled
 router.get('/is-cancelled/:reference', (req, res) => {
-  const { reference } = req.params;
-  const isCancelled = cancelledPayments.has(reference);
-  
-  res.json({
-    success: true,
-    reference: reference,
-    isCancelled: isCancelled
-  });
+  try {
+    const { reference } = req.params;
+    const isCancelled = cancelledPayments.has(reference);
+    
+    res.json({
+      success: true,
+      reference: reference,
+      isCancelled: isCancelled
+    });
+  } catch (err) {
+    console.error('Error checking cancellation status:', err.message);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to check cancellation status',
+      details: err.message
+    });
+  }
 });
 
 // Verify payment status by reference
