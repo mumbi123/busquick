@@ -29,14 +29,14 @@ router.get('/', async (req, res) => {
 /* ───────────── register ───────────── */
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
 
     if (await User.findOne({ email })) {
       return res.status(400).send({ success: false, message: 'User already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await new User({ name, email, password: hashedPassword, role }).save();
+    await new User({ firstName, lastName, email, password: hashedPassword, role }).save();
 
     res.status(201).send({ success: true, message: 'User registered successfully' });
   } catch {
@@ -47,7 +47,7 @@ router.post('/register', async (req, res) => {
 /* ───────────── vendor register ───────────── */
 router.post('/vendor-register', async (req, res) => {
   try {
-    const { name, email, password, phone, address } = req.body;
+    const { firstName, lastName, email, password, phone, address } = req.body;
 
     // Check if user already exists
     if (await User.findOne({ email })) {
@@ -59,7 +59,8 @@ router.post('/vendor-register', async (req, res) => {
     
     // Create vendor user with role 'vendor'
     await new User({ 
-      name, 
+      firstName,
+      lastName, 
       email, 
       password: hashedPassword, 
       role: 'vendor',
@@ -90,10 +91,11 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign(
       {
-        id:    user._id,
-        name:  user.name,
-        email: user.email,
-        role:  user.role
+        id:        user._id,
+        firstName: user.firstName,
+        lastName:  user.lastName,
+        email:     user.email,
+        role:      user.role
       },
       process.env.jwt_secret,
       { expiresIn: '1d' }
@@ -105,10 +107,11 @@ router.post('/login', async (req, res) => {
       data: {
         token,
         user: {
-          id:    user._id,
-          name:  user.name,
-          email: user.email,
-          role:  user.role
+          id:        user._id,
+          firstName: user.firstName,
+          lastName:  user.lastName,
+          email:     user.email,
+          role:      user.role
         }
       }
     });
