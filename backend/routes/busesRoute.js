@@ -70,15 +70,16 @@ router.get('/', async (req, res) => {
       }
     ]);
 
+    // Filter out buses to delete: if now > (journeydate + arrival time + 3 days)
     const busesToKeep = buses.filter(bus => {
       const journeyDate = new Date(bus.journeydate);
       const arrivalTimeMatch = bus.arrival ? bus.arrival.match(/(\d{1,2}):(\d{2})/) : null;
-      if (!arrivalTimeMatch) return true;
+      if (!arrivalTimeMatch) return true;  // If no arrival, keep it
       const arrivalHours = parseInt(arrivalTimeMatch[1]);
       const arrivalMins = parseInt(arrivalTimeMatch[2]);
       const fullArrival = new Date(journeyDate);
       fullArrival.setHours(arrivalHours, arrivalMins, 0, 0);
-      const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);
+      const deleteAfter = new Date(fullArrival.getTime() + (3 * 24 * 60 * 60 * 1000));  // +3 days
       return now < deleteAfter;
     });
 
@@ -112,7 +113,7 @@ router.get('/', async (req, res) => {
         const depMins = parseInt(depTimeMatch[2]);
         const fullDeparture = new Date(journeyDate);
         fullDeparture.setHours(depHours, depMins, 0, 0);
-        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);
+        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);  // -30 min
         bookingDisabled = now >= bookingClose;
       }
 
@@ -319,15 +320,16 @@ router.post('/get-all-buses', async (req, res) => {
     console.log('--- BACKEND DEBUG: Found Buses Count ---');
     console.log('Total buses found:', buses.length);
 
+    // Filter out buses to delete: if now > (journeydate + arrival time + 3 days)
     const busesToKeep = buses.filter(bus => {
       const journeyDate = new Date(bus.journeydate);
       const arrivalTimeMatch = bus.arrival ? bus.arrival.match(/(\d{1,2}):(\d{2})/) : null;
-      if (!arrivalTimeMatch) return true;
+      if (!arrivalTimeMatch) return true;  // If no arrival, keep it
       const arrivalHours = parseInt(arrivalTimeMatch[1]);
       const arrivalMins = parseInt(arrivalTimeMatch[2]);
       const fullArrival = new Date(journeyDate);
       fullArrival.setHours(arrivalHours, arrivalMins, 0, 0);
-      const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);
+      const deleteAfter = new Date(fullArrival.getTime() + (3 * 24 * 60 * 60 * 1000));  // +3 days
       return now < deleteAfter;
     });
 
@@ -361,7 +363,7 @@ router.post('/get-all-buses', async (req, res) => {
         const depMins = parseInt(depTimeMatch[2]);
         const fullDeparture = new Date(journeyDate);
         fullDeparture.setHours(depHours, depMins, 0, 0);
-        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);
+        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);  // -30 min
         bookingDisabled = now >= bookingClose;
       }
 
@@ -642,40 +644,70 @@ router.delete('/delete-bus/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Admin endpoint to delete old completed buses
+// Admin endpoint to delete old completed buses (call this via cron job)
+// Deletes buses 3 days after their arrival time
 router.delete('/cleanup-old-buses', authMiddleware, async (req, res) => {
   try {
     const now = getCurrentTimeInLusaka();
-    const busesToDelete = await Bus.find({
-      status: 'Completed',
-    });
+    console.log('--- CLEANUP: Starting automated cleanup ---');
+    console.log('Current Lusaka time:', now.toISOString());
+    
+    // Find all buses (no status filter - we check dates for all buses)
+    const allBuses = await Bus.find({});
+    console.log('Total buses in database:', allBuses.length);
 
     let deletedCount = 0;
-    for (const bus of busesToDelete) {
+    const busesToDelete = [];
+
+    for (const bus of allBuses) {
       const journeyDate = new Date(bus.journeydate);
       const arrivalTimeMatch = bus.arrival ? bus.arrival.match(/(\d{1,2}):(\d{2})/) : null;
+      
       if (arrivalTimeMatch) {
         const arrivalHours = parseInt(arrivalTimeMatch[1]);
         const arrivalMins = parseInt(arrivalTimeMatch[2]);
         const fullArrival = new Date(journeyDate);
         fullArrival.setHours(arrivalHours, arrivalMins, 0, 0);
-        const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);
+        
+        // Calculate deletion time: arrival time + 3 days
+        const deleteAfter = new Date(fullArrival.getTime() + (3 * 24 * 60 * 60 * 1000));
+        
+        console.log(`Bus ${bus._id}: Arrival=${fullArrival.toISOString()}, DeleteAfter=${deleteAfter.toISOString()}`);
+        
+        // If current time is past the deletion time
         if (now > deleteAfter) {
-          if (!bus.parentBus) {
-            await Bus.deleteMany({ busGroupId: bus.busGroupId });
-            deletedCount += (await Bus.countDocuments({ busGroupId: bus.busGroupId })) + 1;
-          } else {
-            await Bus.findByIdAndDelete(bus._id);
-            deletedCount++;
-          }
+          busesToDelete.push(bus);
         }
       }
     }
 
+    console.log('Buses marked for deletion:', busesToDelete.length);
+
+    // Delete the buses
+    for (const bus of busesToDelete) {
+      // If this is a main bus (no parent), delete all its intermediate buses too
+      if (!bus.parentBus) {
+        const groupBuses = await Bus.find({ busGroupId: bus.busGroupId });
+        await Bus.deleteMany({ busGroupId: bus.busGroupId });
+        deletedCount += groupBuses.length;
+        console.log(`Deleted main bus ${bus._id} and ${groupBuses.length - 1} segments`);
+      } else {
+        // If this is an intermediate bus, just delete it
+        await Bus.findByIdAndDelete(bus._id);
+        deletedCount++;
+        console.log(`Deleted segment bus ${bus._id}`);
+      }
+    }
+
+    console.log('--- CLEANUP: Completed ---');
+    console.log('Total buses deleted:', deletedCount);
+
     res.status(200).send({
       success: true,
-      message: `Cleaned up ${deletedCount} old buses`,
-      deletedCount
+      message: `Cleaned up ${deletedCount} old buses (3 days after arrival)`,
+      deletedCount,
+      cleanupTime: now.toISOString(),
+      timezone: 'Africa/Lusaka (CAT/SAST)'
     });
   } catch (error) {
     console.error('Error cleaning up buses:', error);
