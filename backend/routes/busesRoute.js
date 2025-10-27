@@ -4,16 +4,34 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
+// Utility function to get current time in CAT/SAST timezone (Africa/Lusaka)
+const getCurrentTimeInLusaka = () => {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Lusaka' }));
+};
+
+// Utility function to parse date string and treat it as Lusaka timezone
+const parseAsLusakaTime = (dateString) => {
+  // Parse the date string but treat it as if it's already in Lusaka timezone
+  const date = new Date(dateString);
+  // Get the date components
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  
+  // Create a new date using Lusaka timezone interpretation
+  const lusakaDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00:00`;
+  return new Date(lusakaDateStr);
+};
+
 // GET all buses (public - lists all active buses; use /get-all-buses POST for search)
 router.get('/', async (req, res) => {
   try {
-    const now = new Date();
+    const now = getCurrentTimeInLusaka();
     const query = {
       isActive: { $ne: false },
       status: { $ne: 'Cancelled' }
     };
 
-    // Filter out old completed buses
     const buses = await Bus.aggregate([
       { $match: query },
       {
@@ -52,29 +70,25 @@ router.get('/', async (req, res) => {
       }
     ]);
 
-    // Filter out buses to delete: if now > (journeydate + arrival time + 1 hour)
     const busesToKeep = buses.filter(bus => {
       const journeyDate = new Date(bus.journeydate);
       const arrivalTimeMatch = bus.arrival ? bus.arrival.match(/(\d{1,2}):(\d{2})/) : null;
-      if (!arrivalTimeMatch) return true;  // If no arrival, keep it
+      if (!arrivalTimeMatch) return true;
       const arrivalHours = parseInt(arrivalTimeMatch[1]);
       const arrivalMins = parseInt(arrivalTimeMatch[2]);
       const fullArrival = new Date(journeyDate);
       fullArrival.setHours(arrivalHours, arrivalMins, 0, 0);
-      const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);  // +1 hour
+      const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);
       return now < deleteAfter;
     });
 
-    // FIXED: Sync seats across bus groups - Get shared seat inventory for each bus group
     const busGroupIds = [...new Set(busesToKeep.map(bus => bus.busGroupId).filter(Boolean))];
     const groupSeatsMap = {};
     
-    // For each group, find the authoritative source of booked seats (main bus or segment with most bookings)
     for (const groupId of busGroupIds) {
       const groupBuses = await Bus.find({ busGroupId: groupId });
       let maxBookedSeats = [];
       
-      // Find the bus in the group with the most booked seats (authoritative source)
       for (const bus of groupBuses) {
         if (bus.seatsBooked && bus.seatsBooked.length > maxBookedSeats.length) {
           maxBookedSeats = bus.seatsBooked;
@@ -84,15 +98,12 @@ router.get('/', async (req, res) => {
       groupSeatsMap[groupId] = maxBookedSeats;
     }
 
-    // Now calculate available seats for each bus using shared inventory
     const busesWithAvailableSeats = busesToKeep.map(bus => {
-      // Use shared seat inventory for this bus group
       const sharedSeatsBooked = groupSeatsMap[bus.busGroupId] || bus.seatsBooked || [];
       const seatsBookedCount = sharedSeatsBooked.length;
       const availableSeats = bus.capacity - seatsBookedCount;
       const isFullyBooked = seatsBookedCount >= bus.capacity;
 
-      // Calculate full departure datetime
       const journeyDate = new Date(bus.journeydate);
       const depTimeMatch = bus.departure ? bus.departure.match(/(\d{1,2}):(\d{2})/) : null;
       let bookingDisabled = false;
@@ -101,20 +112,19 @@ router.get('/', async (req, res) => {
         const depMins = parseInt(depTimeMatch[2]);
         const fullDeparture = new Date(journeyDate);
         fullDeparture.setHours(depHours, depMins, 0, 0);
-        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);  // -30 min
+        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);
         bookingDisabled = now >= bookingClose;
       }
 
       return {
         ...bus,
-        seatsBooked: sharedSeatsBooked, // Use shared seat inventory
+        seatsBooked: sharedSeatsBooked,
         availableSeats, 
         isFullyBooked,
         bookingDisabled
       };
     });
 
-    // Additional duplicate check
     const uniqueBusesMap = new Map();
     busesWithAvailableSeats.forEach(bus => {
       if (!uniqueBusesMap.has(bus._id.toString())) {
@@ -148,32 +158,38 @@ router.get('/', async (req, res) => {
 // ADD a new bus (admin only - requires auth)
 router.post('/add-bus', authMiddleware, async (req, res) => {
   try {
+    console.log('--- ADDING BUS (Zambian Time Zone) ---');
+    console.log('Received journey date:', req.body.journeydate);
+    console.log('Received departure time:', req.body.departure);
+    console.log('Received arrival time:', req.body.arrival);
+    
     const newBus = new Bus(req.body);
     await newBus.save();
+    
+    console.log('--- SAVED BUS ---');
+    console.log('Saved journey date:', newBus.journeydate);
+    console.log('Saved departure time:', newBus.departure);
+    console.log('Saved arrival time:', newBus.arrival);
     
     // If intermediate stops are provided, create additional buses for each segment
     if (req.body.intermediateStops && req.body.intermediateStops.length > 0) {
       const mainBusId = newBus._id;
       const busGroupId = mainBusId.toString();
       
-      // Update the main bus with the group ID
       await Bus.findByIdAndUpdate(mainBusId, { busGroupId });
       
-      // Create buses for all segments: A-B, A-C, A-D
       const segmentBuses = [];
       
-      // Add the final destination as the last stop
       const allStops = [
         ...req.body.intermediateStops,
         {  
           city: req.body.to, 
           dropoff: req.body.dropoff, 
           arrivalTime: req.body.arrival, 
-          additionalPrice: req.body.price // Use base price for final destination
+          additionalPrice: req.body.price
         }
       ];
       
-      // Create a bus for each segment
       for (let i = 0; i < allStops.length; i++) {
         const stop = allStops[i];
         
@@ -182,13 +198,12 @@ router.post('/add-bus', authMiddleware, async (req, res) => {
           to: stop.city,
           dropoff: stop.dropoff,
           arrival: stop.arrivalTime,
-          price: stop.additionalPrice, // Use only the additionalPrice for segments
+          price: stop.additionalPrice,
           parentBus: mainBusId,
           busGroupId: busGroupId,
           isSegment: true,
-          // IMPORTANT: All segments share the same seat inventory
-          seatsBooked: [], // Start empty, will be synced with main bus
-          _id: undefined // Let MongoDB generate new ID
+          seatsBooked: [],
+          _id: undefined
         });
         
         segmentBuses.push(segmentBus.save());
@@ -197,7 +212,10 @@ router.post('/add-bus', authMiddleware, async (req, res) => {
       await Promise.all(segmentBuses);
     }
     
-    res.status(201).send({ success: true, message: 'Bus added successfully' });
+    res.status(201).send({ 
+      success: true, 
+      message: 'Bus added successfully (times stored as Zambian/CAT timezone)'
+    });
   } catch (error) {
     console.error('Error adding bus:', error);
     res.status(500).send({ success: false, message: error.message });
@@ -215,7 +233,7 @@ router.post('/get-all-buses', async (req, res) => {
     console.log('Departure Date:', departureDate);
 
     const query = {};
-    const now = new Date();  // Current time
+    const now = getCurrentTimeInLusaka();
 
     if (from?.trim()) {
       query.from = { $regex: new RegExp(from.trim(), 'i') };
@@ -254,14 +272,12 @@ router.post('/get-all-buses', async (req, res) => {
       }
     }
 
-    // Only show active buses for public users
     query.isActive = { $ne: false };
     query.status = { $ne: 'Cancelled' };
 
     console.log('--- BACKEND DEBUG: MongoDB Query ---');
     console.log(JSON.stringify(query, null, 2));
 
-    // Use aggregation pipeline to ensure no duplicates and better control
     const buses = await Bus.aggregate([
       { $match: query },
       {
@@ -303,29 +319,25 @@ router.post('/get-all-buses', async (req, res) => {
     console.log('--- BACKEND DEBUG: Found Buses Count ---');
     console.log('Total buses found:', buses.length);
 
-    // Filter out buses to delete: if now > (journeydate + arrival time + 1 hour)
     const busesToKeep = buses.filter(bus => {
       const journeyDate = new Date(bus.journeydate);
       const arrivalTimeMatch = bus.arrival ? bus.arrival.match(/(\d{1,2}):(\d{2})/) : null;
-      if (!arrivalTimeMatch) return true;  // If no arrival, keep it
+      if (!arrivalTimeMatch) return true;
       const arrivalHours = parseInt(arrivalTimeMatch[1]);
       const arrivalMins = parseInt(arrivalTimeMatch[2]);
       const fullArrival = new Date(journeyDate);
       fullArrival.setHours(arrivalHours, arrivalMins, 0, 0);
-      const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);  // +1 hour
+      const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);
       return now < deleteAfter;
     });
 
-    // FIXED: Sync seats across bus groups - Get shared seat inventory for each bus group
     const busGroupIds = [...new Set(busesToKeep.map(bus => bus.busGroupId).filter(Boolean))];
     const groupSeatsMap = {};
     
-    // For each group, find the authoritative source of booked seats (main bus or segment with most bookings)
     for (const groupId of busGroupIds) {
       const groupBuses = await Bus.find({ busGroupId: groupId });
       let maxBookedSeats = [];
       
-      // Find the bus in the group with the most booked seats (authoritative source)
       for (const bus of groupBuses) {
         if (bus.seatsBooked && bus.seatsBooked.length > maxBookedSeats.length) {
           maxBookedSeats = bus.seatsBooked;
@@ -335,15 +347,12 @@ router.post('/get-all-buses', async (req, res) => {
       groupSeatsMap[groupId] = maxBookedSeats;
     }
 
-    // Now calculate available seats for each bus using shared inventory
     const busesWithAvailableSeats = busesToKeep.map(bus => {
-      // Use shared seat inventory for this bus group
       const sharedSeatsBooked = groupSeatsMap[bus.busGroupId] || bus.seatsBooked || [];
       const seatsBookedCount = sharedSeatsBooked.length;
       const availableSeats = bus.capacity - seatsBookedCount;
       const isFullyBooked = seatsBookedCount >= bus.capacity;
 
-      // Calculate full departure datetime
       const journeyDate = new Date(bus.journeydate);
       const depTimeMatch = bus.departure ? bus.departure.match(/(\d{1,2}):(\d{2})/) : null;
       let bookingDisabled = false;
@@ -352,20 +361,19 @@ router.post('/get-all-buses', async (req, res) => {
         const depMins = parseInt(depTimeMatch[2]);
         const fullDeparture = new Date(journeyDate);
         fullDeparture.setHours(depHours, depMins, 0, 0);
-        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);  // -30 min
+        const bookingClose = new Date(fullDeparture.getTime() - 30 * 60 * 1000);
         bookingDisabled = now >= bookingClose;
       }
 
       return {
         ...bus,
-        seatsBooked: sharedSeatsBooked, // Use shared seat inventory
+        seatsBooked: sharedSeatsBooked,
         availableSeats, 
         isFullyBooked,
         bookingDisabled
       };
     });
 
-    // Additional duplicate check
     const uniqueBusesMap = new Map();
     busesWithAvailableSeats.forEach(bus => {
       if (!uniqueBusesMap.has(bus._id.toString())) {
@@ -416,7 +424,6 @@ router.get('/get-bus/:id', async (req, res) => {
       });
     }
 
-    // Only show active buses for public users
     if (bus.isActive === false || bus.status === 'Cancelled') {
       return res.status(404).send({
         success: false,
@@ -424,27 +431,22 @@ router.get('/get-bus/:id', async (req, res) => {
       });
     }
 
-    // FIXED: Get shared seat inventory for this bus group
     let sharedSeatsBooked = bus.seatsBooked || [];
     
     if (bus.busGroupId) {
-      // Get all buses in the same group
       const groupBuses = await Bus.find({ busGroupId: bus.busGroupId });
-      
-      // Find the bus with the most booked seats (authoritative source)
       let maxBookedSeats = [];
       for (const groupBus of groupBuses) {
         if (groupBus.seatsBooked && groupBus.seatsBooked.length > maxBookedSeats.length) {
           maxBookedSeats = groupBus.seatsBooked;
         }
       }
-      
       sharedSeatsBooked = maxBookedSeats;
     }
 
     const busWithAvailableSeats = {
       ...bus.toObject(),
-      seatsBooked: sharedSeatsBooked, // Use shared inventory
+      seatsBooked: sharedSeatsBooked,
       availableSeats: bus.capacity - sharedSeatsBooked.length,
       isFullyBooked: sharedSeatsBooked.length >= bus.capacity
     };
@@ -463,7 +465,7 @@ router.get('/get-bus/:id', async (req, res) => {
   }
 });
 
-// FIXED: BOOK seats with proper shared inventory management
+// BOOK seats with proper shared inventory management
 router.post('/book-seats', authMiddleware, async (req, res) => {
   try {
     const { busId, seats } = req.body;
@@ -472,20 +474,17 @@ router.post('/book-seats', authMiddleware, async (req, res) => {
       return res.status(400).send({ success: false, message: 'Invalid request: busId and seats array are required' });
     }
 
-    // Find the requested bus
     const requestedBus = await Bus.findById(busId);
     if (!requestedBus) {
       return res.status(404).send({ success: false, message: 'Bus not found' });
     }
 
-    // Find all buses in the same group (they share the same physical seats)
     const groupBuses = await Bus.find({ busGroupId: requestedBus.busGroupId });
     
     if (groupBuses.length === 0) {
       return res.status(404).send({ success: false, message: 'Bus group not found' });
     }
 
-    // Find the bus with the most booked seats (authoritative source)
     let authoritativeBus = groupBuses[0];
     for (const bus of groupBuses) {
       if (bus.seatsBooked && bus.seatsBooked.length > authoritativeBus.seatsBooked.length) {
@@ -493,7 +492,6 @@ router.post('/book-seats', authMiddleware, async (req, res) => {
       }
     }
 
-    // Check if any seats are already booked using shared inventory
     const currentlyBookedSeats = authoritativeBus.seatsBooked || [];
     const alreadyBooked = seats.filter(seat => currentlyBookedSeats.includes(seat.toString()));
     
@@ -504,7 +502,6 @@ router.post('/book-seats', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check available capacity using the requested bus's capacity
     if (currentlyBookedSeats.length + seats.length > requestedBus.capacity) {
       return res.status(400).send({ 
         success: false, 
@@ -512,11 +509,9 @@ router.post('/book-seats', authMiddleware, async (req, res) => {
       });
     }
 
-    // Update seats for ALL buses in the group (shared physical inventory)
     const newBookedSeats = [...currentlyBookedSeats, ...seats.map(seat => seat.toString())];
     const isFullyBooked = newBookedSeats.length >= requestedBus.capacity;
 
-    // Update all buses in the group with the same booked seats
     const updatePromises = groupBuses.map(bus => 
       Bus.findByIdAndUpdate(bus._id, {
         seatsBooked: newBookedSeats,
@@ -565,7 +560,6 @@ router.put('/update-bus-status/:id', authMiddleware, async (req, res) => {
       });
     }
 
-    // FIXED: Update status for all buses in the same group
     if (bus.busGroupId) {
       await Bus.updateMany(
         { busGroupId: bus.busGroupId },
@@ -629,11 +623,9 @@ router.delete('/delete-bus/:id', authMiddleware, async (req, res) => {
       });
     }
     
-    // If this is a main bus, delete all its intermediate buses too
     if (!bus.parentBus) {
       await Bus.deleteMany({ busGroupId: bus.busGroupId });
     } else {
-      // If this is an intermediate bus, just delete it
       await Bus.findByIdAndDelete(req.params.id);
     }
 
@@ -650,18 +642,16 @@ router.delete('/delete-bus/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Admin endpoint to delete old completed buses (call this via cron job)
+// Admin endpoint to delete old completed buses
 router.delete('/cleanup-old-buses', authMiddleware, async (req, res) => {
   try {
-    const now = new Date();
-    // Find buses where estimated delete time < now
+    const now = getCurrentTimeInLusaka();
     const busesToDelete = await Bus.find({
       status: 'Completed',
     });
 
     let deletedCount = 0;
     for (const bus of busesToDelete) {
-      // Recalc delete time as in filter above
       const journeyDate = new Date(bus.journeydate);
       const arrivalTimeMatch = bus.arrival ? bus.arrival.match(/(\d{1,2}):(\d{2})/) : null;
       if (arrivalTimeMatch) {
@@ -671,7 +661,6 @@ router.delete('/cleanup-old-buses', authMiddleware, async (req, res) => {
         fullArrival.setHours(arrivalHours, arrivalMins, 0, 0);
         const deleteAfter = new Date(fullArrival.getTime() + 60 * 60 * 1000);
         if (now > deleteAfter) {
-          // If this is a main bus, delete all its intermediate buses too
           if (!bus.parentBus) {
             await Bus.deleteMany({ busGroupId: bus.busGroupId });
             deletedCount += (await Bus.countDocuments({ busGroupId: bus.busGroupId })) + 1;
