@@ -2,26 +2,22 @@ import express from 'express';
 import Booking from '../model/bookingModel.js';
 import Bus from '../model/busModel.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import { sendBookingConfirmation } from '../services/emailService.js';
 
 const router = express.Router();
 
-// Route to get all bookings (admin only) or user-specific bookings - PROTECTED
+// Get bookings (existing route)
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const userId = req.userId;
     const userRole = req.userRole;
 
-    console.log('Fetching bookings for user:', userId, 'Role:', userRole);
-
-    // If user is admin, fetch all bookings
     if (userRole === 'admin') {
       const bookings = await Booking.find()
         .populate('bus')
         .populate('user', 'name email')
         .sort({ createdAt: -1 })
-        .lean(); // Use lean() for better performance
-      
-      console.log('Admin bookings found:', bookings.length);
+        .lean();
       
       return res.status(200).json({
         message: 'All bookings retrieved successfully', 
@@ -30,14 +26,11 @@ router.get('/', authMiddleware, async (req, res) => {
       });
     }
     
-    // For regular users, fetch only their bookings
     const bookings = await Booking.find({ user: userId })
       .populate('bus')
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
-      .lean(); // Use lean() for better performance
-
-    console.log('User bookings found:', bookings.length);
+      .lean();
 
     res.status(200).json({
       message: 'User bookings retrieved successfully',
@@ -46,7 +39,6 @@ router.get('/', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching bookings:', error);
-    console.error('Error stack:', error.stack);
     res.status(500).json({
       message: 'Failed to fetch bookings',
       success: false,
@@ -55,9 +47,8 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Legacy/alias route - redirect to root logic (optional, can remove if not needed)
+// User bookings route
 router.get('/user-bookings', authMiddleware, async (req, res) => {
-  // Forward the request to the main bookings endpoint
   try {
     const userId = req.userId;
     
@@ -82,13 +73,12 @@ router.get('/user-bookings', authMiddleware, async (req, res) => {
   }
 });
 
-// Route to book seats (protected)
+// Book seat route with email confirmation
 router.post('/book-seat', authMiddleware, async (req, res) => {
   try {
     const { bus, seats, transactionId, totalPrice, passengerDetails, paymentMethod } = req.body;
     const userId = req.userId;
 
-    // Validate required fields
     if (!bus || !seats || !transactionId || !totalPrice) {
       return res.status(400).json({
         message: 'Missing required fields',
@@ -96,7 +86,6 @@ router.post('/book-seat', authMiddleware, async (req, res) => {
       });
     }
 
-    // Validate seats array
     if (!Array.isArray(seats) || seats.length === 0) {
       return res.status(400).json({
         message: 'Seats must be a non-empty array',
@@ -104,7 +93,6 @@ router.post('/book-seat', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if bus exists
     const busRecord = await Bus.findById(bus);
     if (!busRecord) {
       return res.status(404).json({
@@ -113,7 +101,6 @@ router.post('/book-seat', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if any of the selected seats are already booked
     const alreadyBookedSeats = seats.filter(seat =>
       busRecord.seatsBooked.includes(seat)
     );
@@ -125,7 +112,6 @@ router.post('/book-seat', authMiddleware, async (req, res) => {
       });
     }
 
-    // Create a new booking document
     const newBooking = new Booking({
       user: userId,
       bus,
@@ -134,23 +120,37 @@ router.post('/book-seat', authMiddleware, async (req, res) => {
       totalPrice,
       passengerDetails,
       paymentMethod,
-      status: 'confirmed'
+      status: 'confirmed',
+      bookingDate: new Date()
     });
 
-    // Save the new booking to the database
     await newBooking.save();
 
-    // Update the bus's booked seats
     busRecord.seatsBooked = [...busRecord.seatsBooked, ...seats];
     await busRecord.save();
 
-    // Populate the booking with bus details for response
     const populatedBooking = await Booking.findById(newBooking._id)
       .populate('bus')
       .populate('user', 'name email');
 
+    // Send booking confirmation email (non-blocking)
+    sendBookingConfirmation({
+      email: populatedBooking.user.email,
+      name: populatedBooking.user.name,
+      bookingId: populatedBooking._id.toString().substring(0, 16),
+      origin: busRecord.from,
+      destination: busRecord.to,
+      departureDate: busRecord.date,
+      departureTime: busRecord.departureTime,
+      seats: populatedBooking.seats,
+      totalPrice: populatedBooking.totalPrice,
+      busName: busRecord.name || busRecord.companyName
+    }, null) // null for PDF buffer - we'll add PDF generation later if needed
+      .then(() => console.log(`✓ Booking confirmation sent to ${populatedBooking.user.email}`))
+      .catch(err => console.error('Email error:', err));
+
     res.status(201).json({
-      message: 'Booking created successfully',
+      message: 'Booking created successfully! Check your email for confirmation.',
       data: populatedBooking,
       success: true,
     });
@@ -164,14 +164,13 @@ router.post('/book-seat', authMiddleware, async (req, res) => {
   }
 });
 
-// Route to cancel a booking (protected)
+// Cancel booking route
 router.put('/cancel/:bookingId', authMiddleware, async (req, res) => {
   try {
     const { bookingId } = req.params;
     const userId = req.userId;
     const userRole = req.userRole;
 
-    // Find the booking
     const booking = await Booking.findById(bookingId);
 
     if (!booking) {
@@ -181,7 +180,6 @@ router.put('/cancel/:bookingId', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if the booking belongs to the user or user is admin
     if (booking.user.toString() !== userId && userRole !== 'admin') {
       return res.status(403).json({
         message: 'Unauthorized to cancel this booking',
@@ -189,7 +187,6 @@ router.put('/cancel/:bookingId', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if booking can be cancelled
     if (booking.status === 'cancelled') {
       return res.status(400).json({
         message: 'Booking is already cancelled',
@@ -197,11 +194,9 @@ router.put('/cancel/:bookingId', authMiddleware, async (req, res) => {
       });
     }
 
-    // Update booking status
     booking.status = 'cancelled';
     await booking.save();
 
-    // Remove seats from bus's booked seats
     const busRecord = await Bus.findById(booking.bus);
     if (busRecord) {
       busRecord.seatsBooked = busRecord.seatsBooked.filter(
@@ -225,14 +220,13 @@ router.put('/cancel/:bookingId', authMiddleware, async (req, res) => {
   }
 });
 
-// Route to delete a booking (protected)
+// Delete booking route
 router.delete('/delete/:bookingId', authMiddleware, async (req, res) => {
   try {
     const { bookingId } = req.params;
     const userId = req.userId;
     const userRole = req.userRole;
 
-    // Find the booking
     const booking = await Booking.findById(bookingId);
 
     if (!booking) {
@@ -242,7 +236,6 @@ router.delete('/delete/:bookingId', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if the booking belongs to the user or user is admin
     if (booking.user.toString() !== userId && userRole !== 'admin') {
       return res.status(403).json({
         message: 'Unauthorized to delete this booking',
@@ -250,7 +243,6 @@ router.delete('/delete/:bookingId', authMiddleware, async (req, res) => {
       });
     }
 
-    // Before deleting, deallocate seats from the associated bus
     const busRecord = await Bus.findById(booking.bus);
     if (busRecord) {
       busRecord.seatsBooked = busRecord.seatsBooked.filter(
@@ -259,7 +251,6 @@ router.delete('/delete/:bookingId', authMiddleware, async (req, res) => {
       await busRecord.save();
     }
 
-    // Delete the booking from the database
     await Booking.deleteOne({ _id: bookingId });
 
     res.status(200).json({
