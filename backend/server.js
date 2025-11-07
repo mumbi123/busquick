@@ -7,7 +7,7 @@ import busesRoute from './routes/busesRoute.js';
 import bookingRoute from './routes/bookingRoute.js';
 import priceRoute from './routes/PriceRoute.js';
 import paymentRoutes from './routes/paymentRoute.js';
-import { initializeCronJobs } from './services/cronJobs.js';
+import { initializeCronJobs } from './routes/cronJobs.js';
 
 dotenv.config();
 const app = express();
