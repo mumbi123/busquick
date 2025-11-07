@@ -1,12 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import connectDB from './config/dbConfig.js';  // Database connection
+import connectDB from './config/dbConfig.js';
 import userRoutes from './routes/userRoute.js';
 import busesRoute from './routes/busesRoute.js';
 import bookingRoute from './routes/bookingRoute.js';
 import priceRoute from './routes/PriceRoute.js';
 import paymentRoutes from './routes/paymentRoute.js';
+import { initializeCronJobs } from './services/cronJobs.js';
 
 dotenv.config();
 const app = express();
@@ -14,7 +15,7 @@ const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://busquick-frontend-final.onrender.com'],  // Fixed: array syntax
+    origin: ['http://localhost:5173', 'https://busquick-frontend-final.onrender.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -42,8 +43,16 @@ app.use((req, res, next) => {
   }
 });
 
+// Connect to database and initialize cron jobs
 connectDB().then(() => {
+  console.log('✓ Database connected');
+  
+  // Initialize email reminder cron jobs
+  initializeCronJobs();
+  
   app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`✓ Server running on port ${port}`);
   });
 });
+
+
