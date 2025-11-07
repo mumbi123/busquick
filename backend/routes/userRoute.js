@@ -4,6 +4,7 @@ import User from '../model/usersModel.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { sendRegistrationEmail } from '../routes/Emailservice.js'; 
 
 const router = Router();
 
@@ -38,6 +39,12 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     await new User({ firstName, lastName, email, password: hashedPassword, role }).save();
 
+    // Send welcome email (don't wait for it, send async)
+    const fullName = `${firstName} ${lastName}`;
+    sendRegistrationEmail(email, fullName)
+      .then(() => console.log(`✓ Welcome email sent to ${email}`))
+      .catch(err => console.error('Email error:', err));
+
     res.status(201).send({ success: true, message: 'User registered successfully' });
   } catch {
     res.status(500).send({ success: false, message: 'Error registering user' });
@@ -67,6 +74,12 @@ router.post('/vendor-register', async (req, res) => {
       phone,
       address
     }).save();
+
+    // Send welcome email to vendor
+    const fullName = `${firstName} ${lastName}`;
+    sendRegistrationEmail(email, fullName)
+      .then(() => console.log(`✓ Welcome email sent to vendor ${email}`))
+      .catch(err => console.error('Email error:', err));
 
     res.status(201).send({ success: true, message: 'Vendor registered successfully. Please login to continue.' });
   } catch (error) {
