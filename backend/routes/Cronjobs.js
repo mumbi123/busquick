@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import Booking from '../model/bookingModel.js';
-import { sendTripReminder } from './emailService.js';
+import { sendTripReminder } from './Emailservice.js';
 
 // Initialize cron jobs
 export const initializeCronJobs = () => {
