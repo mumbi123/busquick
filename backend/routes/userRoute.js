@@ -4,7 +4,7 @@ import User from '../model/usersModel.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { sendRegistrationEmail } from '../routes/Emailservice.js'; 
+import { sendRegistrationEmail } from './EmailServiceRegister.js';
 
 const router = Router();
 
