@@ -1,7 +1,6 @@
-
 export const sendRegistrationEmail = async (email, name) => {
   try {
-    console.log(`📧 Sending welcome email to: ${email}`);
+    console.log(`📧 Sending registration email to: ${email}`);
     
     const apiKey = process.env.MAILJET_API_KEY;
     const apiSecret = process.env.MAILJET_API_SECRET;
@@ -27,7 +26,7 @@ export const sendRegistrationEmail = async (email, name) => {
                 Name: name
               }
             ],
-            Subject: "Welcome to BusQuick! 🚌",
+            Subject: "REGISTRATION",
             HTMLPart: `
               <!DOCTYPE html>
               <html>
@@ -41,11 +40,11 @@ export const sendRegistrationEmail = async (email, name) => {
               </head>
               <body>
                 <div class="header">
-                  <h1>🚌 Welcome to BusQuick!</h1>
+                  <h1>🚌 REGISTRATION</h1>
                 </div>
                 <div class="content">
                   <h2>Hello ${name}! 👋</h2>
-                  <p>Thank you for registering with BusQuick.</p>
+                  <p>Thank you for registering with <strong>BusQuick</strong>.</p>
                   
                   <div class="feature">
                     <strong>🎫 Easy Booking</strong><br>Book tickets in just a few clicks
@@ -77,7 +76,7 @@ export const sendRegistrationEmail = async (email, name) => {
       throw new Error(data.ErrorMessage || 'Failed to send email');
     }
 
-    console.log(`✅ Welcome email sent to ${email}`);
+    console.log(`✅ Registration email sent to ${email}`);
     console.log(`✅ Message ID: ${data.Messages[0].To[0].MessageID}`);
     return { success: true, messageId: data.Messages[0].To[0].MessageID };
   } catch (error) {
@@ -90,4 +89,3 @@ export const sendRegistrationEmail = async (email, name) => {
 console.log('✓ Email service ready (Mailjet API)');
 
 export default sendRegistrationEmail;
-
