@@ -1,13 +1,13 @@
 import nodemailer from 'nodemailer';
 
-// Create transporter for registration emails
+// Create transporter for registration emails using Brevo
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: process.env.EMAIL_PORT || 587,
+  host:'smtp-relay.brevo.com',
+  port: 587,
   secure: false,
   auth: {
-    user: process.env.EMAIL_USER || 'infobusquick@gmail.com',
-    pass: process.env.EMAIL_PASSWORD || 'BusQuick4433'
+    user:'9b37ec001@smtp-brevo.com',
+    pass:'xsmtpsib-edf059e132d3763a8ad830d14f8e4d8a4ba0ba44c70a5db634482f82a0f2dbf4-9R2ByztFHSUf3M3z'
   }
 });
 
@@ -16,15 +16,17 @@ transporter.verify((error, success) => {
   if (error) {
     console.error('❌ Registration Email config error:', error);
   } else {
-    console.log('✓ Registration Email server ready');
+    console.log('✓ Registration Email server ready (Brevo)');
   }
 });
 
 // Send registration email
 export const sendRegistrationEmail = async (email, name) => {
   try {
+    console.log(`📧 Sending welcome email to: ${email}`);
+    
     const info = await transporter.sendMail({
-      from: '"BusQuick" <infobusquick@gmail.com>',
+      from: '"BusQuick" <lesachama@gmail.com>',
       to: email,
       subject: 'Welcome to BusQuick! 🚌',
       html: `
@@ -35,7 +37,6 @@ export const sendRegistrationEmail = async (email, name) => {
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; }
             .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
             .content { padding: 30px; background: #f9f9f9; }
-            .button { display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
             .feature { background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #667eea; }
           </style>
         </head>
@@ -68,16 +69,12 @@ export const sendRegistrationEmail = async (email, name) => {
       `
     });
     
-    console.log(`✓ Welcome email sent to ${email}`);
-    console.log(`Message ID: ${info.messageId}`);
+    console.log(`✅ Welcome email sent to ${email}`);
+    console.log(`✅ Message ID: ${info.messageId}`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('❌ Error sending registration email:', error);
-    console.error('Error details:', {
-      code: error.code,
-      command: error.command,
-      response: error.response
-    });
+    console.error('❌ Error code:', error.code);
     throw error;
   }
 };
