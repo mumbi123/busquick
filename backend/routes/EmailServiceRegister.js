@@ -1,82 +1,94 @@
-import nodemailer from 'nodemailer';
 
-// Create transporter using Brevo SMTP (works locally and on Render)
-const transporter = nodemailer.createTransport({
-  host:'smtp-relay.brevo.com',
-  port:587,
-  secure: false,
-  auth: {
-    user:'9b37ec001@smtp-brevo.com',
-    pass: process.env.EMAIL_PASSWORD 
-  }
-});
-
-// Verify connection on startup
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('❌ Registration Email config error:', error);
-  } else {
-    console.log('✓ Registration Email server ready (Brevo SMTP)');
-  }
-});
-
-// Send registration email
 export const sendRegistrationEmail = async (email, name) => {
   try {
-    console.log(`📧 Sending welcome email to: ${email}`); // ✅ Fixed: parentheses
+    console.log(`📧 Sending welcome email to: ${email}`);
     
-    const info = await transporter.sendMail({
-      from: '"BusQuick" <lesachama@gmail.com>',
-      to: email,
-      subject: 'Welcome to BusQuick! 🚌',
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
-            .content { padding: 30px; background: #f9f9f9; }
-            .feature { background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #667eea; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1>🚌 Welcome to BusQuick!</h1>
-          </div>
-          <div class="content">
-            <h2>Hello ${name}! 👋</h2>
-            <p>Thank you for registering with BusQuick.</p>
-            
-            <div class="feature">
-              <strong>🎫 Easy Booking</strong><br>Book tickets in just a few clicks
-            </div>
-            <div class="feature">
-              <strong>💳 Secure Payments</strong><br>Pay safely with Mobile Money or Bank Transfer
-            </div>
-            <div class="feature">
-              <strong>📧 Instant Tickets</strong><br>Receive your e-tickets immediately
-            </div>
-            <div class="feature">
-              <strong>⏰ Trip Reminders</strong><br>Get notified 1 hour before departure
-            </div>
-            
-            <p>Start booking your trips today!</p>
-            <p>Safe travels! 🛣️</p>
-          </div>
-        </body>
-        </html>
-      `
+    const apiKey = process.env.MAILJET_API_KEY;
+    const apiSecret = process.env.MAILJET_API_SECRET;
+    
+    const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+    
+    const response = await fetch('https://api.mailjet.com/v3.1/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        Messages: [
+          {
+            From: {
+              Email: "lesachama@gmail.com",
+              Name: "BusQuick"
+            },
+            To: [
+              {
+                Email: email,
+                Name: name
+              }
+            ],
+            Subject: "Welcome to BusQuick! 🚌",
+            HTMLPart: `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; }
+                  .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+                  .content { padding: 30px; background: #f9f9f9; }
+                  .feature { background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #667eea; }
+                </style>
+              </head>
+              <body>
+                <div class="header">
+                  <h1>🚌 Welcome to BusQuick!</h1>
+                </div>
+                <div class="content">
+                  <h2>Hello ${name}! 👋</h2>
+                  <p>Thank you for registering with BusQuick.</p>
+                  
+                  <div class="feature">
+                    <strong>🎫 Easy Booking</strong><br>Book tickets in just a few clicks
+                  </div>
+                  <div class="feature">
+                    <strong>💳 Secure Payments</strong><br>Pay safely with Mobile Money or Bank Transfer
+                  </div>
+                  <div class="feature">
+                    <strong>📧 Instant Tickets</strong><br>Receive your e-tickets immediately
+                  </div>
+                  <div class="feature">
+                    <strong>⏰ Trip Reminders</strong><br>Get notified 1 hour before departure
+                  </div>
+                  
+                  <p>Start booking your trips today!</p>
+                  <p>Safe travels! 🛣️</p>
+                </div>
+              </body>
+              </html>
+            `
+          }
+        ]
+      })
     });
+
+    const data = await response.json();
     
-    console.log(`✅ Welcome email sent to ${email}`); // ✅ Fixed: parentheses
-    console.log(`✅ Message ID: ${info.messageId}`); // ✅ Fixed: parentheses
-    return { success: true, messageId: info.messageId };
+    if (!response.ok) {
+      throw new Error(data.ErrorMessage || 'Failed to send email');
+    }
+
+    console.log(`✅ Welcome email sent to ${email}`);
+    console.log(`✅ Message ID: ${data.Messages[0].To[0].MessageID}`);
+    return { success: true, messageId: data.Messages[0].To[0].MessageID };
   } catch (error) {
     console.error('❌ Error sending registration email:', error);
-    console.error('❌ Error code:', error.code);
+    console.error('❌ Error details:', error.message);
     throw error;
   }
 };
 
+console.log('✓ Email service ready (Mailjet API)');
+
 export default sendRegistrationEmail;
+
+
