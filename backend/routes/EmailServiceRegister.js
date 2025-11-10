@@ -18,7 +18,7 @@ export const sendRegistrationEmail = async (email, name) => {
         Messages: [
           {
             From: {
-              Email: "lesachama@gmail.com",
+              Email: "moseslesa436@gmail.com",
               Name: "BusQuick"
             },
             To: [
@@ -90,5 +90,4 @@ export const sendRegistrationEmail = async (email, name) => {
 console.log('✓ Email service ready (Mailjet API)');
 
 export default sendRegistrationEmail;
-
 
