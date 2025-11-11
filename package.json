@@ -22,7 +22,7 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.3",
     "uuid": "^13.0.0",
-    "@getbrevo/brevo": "^2.0.0"   // <-- NEW
+    "@getbrevo/brevo": "^2.0.0"   
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
