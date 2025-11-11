@@ -1,81 +1,61 @@
-import nodemailer from 'nodemailer';
+// backend/utils/sendRegistrationEmail.js
+import * as Brevo from '@getbrevo/brevo';
 
-// Create transporter for registration emails using Brevo
-const transporter = nodemailer.createTransport({
-  host:'smtp-relay.brevo.com',
-  port:587,
-  secure: false,
-  auth: {
-    user:'9b37ec001@smtp-brevo.com',
-    pass: process.env.EMAIL_PASSWORD 
-  }
-});
+// Initialise API client
+const apiInstance = new Brevo.TransactionalEmailsApi();
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.EMAIL_PASSWORD
+);
 
-// Verify connection on startup
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('❌ Registration Email config error:', error);
-  } else {
-    console.log('✓ Registration Email server ready (Brevo)');
-  }
-});
-
-// Send registration email
+/**
+ * Send welcome email after registration
+ * @param {string} email - recipient address
+ * @param {string} name  - recipient first name
+ */
 export const sendRegistrationEmail = async (email, name) => {
   try {
-    console.log(`📧 Sending welcome email to: ${email}`);
-    
-    const info = await transporter.sendMail({
-      from: '"BusQuick" <lesachama@gmail.com>',
-      to: email,
-      subject: 'Welcome to BusQuick! 🚌',
-      html: `
+    console.log(`Sending welcome email to: ${email}`);
+
+    const sendSmtpEmail = {
+      sender: { name: 'BusQuick', email: 'lesachama@gmail.com' },
+      to: [{ email, name }],
+      subject: 'Welcome to BusQuick!',
+      htmlContent: `
         <!DOCTYPE html>
         <html>
         <head>
           <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
-            .content { padding: 30px; background: #f9f9f9; }
-            .feature { background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #667eea; }
+            body {font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;}
+            .header {background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:30px;text-align:center;}
+            .content {padding:30px;background:#f9f9f9;}
+            .feature {background:white;padding:15px;margin:10px 0;border-left:4px solid #667eea;}
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>🚌 Welcome to BusQuick!</h1>
-          </div>
+          <div class="header"><h1>Welcome to BusQuick!</h1></div>
           <div class="content">
-            <h2>Hello ${name}! 👋</h2>
+            <h2>Hello ${name}!</h2>
             <p>Thank you for registering with BusQuick.</p>
-            
-            <div class="feature">
-              <strong>🎫 Easy Booking</strong><br>Book tickets in just a few clicks
-            </div>
-            <div class="feature">
-              <strong>💳 Secure Payments</strong><br>Pay safely with Mobile Money or Bank Transfer
-            </div>
-            <div class="feature">
-              <strong>📧 Instant Tickets</strong><br>Receive your e-tickets immediately
-            </div>
-            <div class="feature">
-              <strong>⏰ Trip Reminders</strong><br>Get notified 1 hour before departure
-            </div>
-            
+            <div class="feature"><strong>Easy Booking</strong><br>Book tickets in just a few clicks</div>
+            <div class="feature"><strong>Secure Payments</strong><br>Pay safely with Mobile Money or Bank Transfer</div>
+            <div class="feature"><strong>Instant Tickets</strong><br>Receive your e-tickets immediately</div>
+            <div class="feature"><strong>Trip Reminders</strong><br>Get notified 1 hour before departure</div>
             <p>Start booking your trips today!</p>
-            <p>Safe travels! 🛣️</p>
+            <p>Safe travels!</p>
           </div>
         </body>
         </html>
-      `
-    });
-    
-    console.log(`✅ Welcome email sent to ${email}`);
-    console.log(`✅ Message ID: ${info.messageId}`);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error('❌ Error sending registration email:', error);
-    console.error('❌ Error code:', error.code);
-    throw error;
+      `,
+    };
+
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+
+    console.log(`Email sent to ${email} – MessageId: ${result.body.messageId}`);
+    return { success: true, messageId: result.body.messageId };
+  } catch (err) {
+    console.error('Failed to send registration email:', err.message || err);
+    throw err;
   }
 };
 
