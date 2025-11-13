@@ -18,7 +18,7 @@ export const sendRegistrationEmail = async (email, name) => {
     console.log(`📧 Sending welcome email to: ${email}`);
     
     const sendSmtpEmail = {
-      sender: { name: 'BusQuick', email: 'lesachama@gmail.com' },
+      sender: { name: 'BusQuick', email: 'infobusquick@gmail.com' },
       to: [{ email, name }],
       subject: 'Welcome to BusQuick! 🚌',
       htmlContent: `
