@@ -16,7 +16,7 @@ export const sendBookingConfirmation = async (bookingData, pdfBuffer) => {
     
     const sendSmtpEmail = new brevo.SendSmtpEmail();
     
-    sendSmtpEmail.sender = { name: "BusQuick Bookings", email: "lesachama@gmail.com" };
+    sendSmtpEmail.sender = { name: "BusQuick Bookings", email: "infobusquick@gmail.com" };
     sendSmtpEmail.to = [{ email: email, name: name }];
     sendSmtpEmail.subject = `Booking Confirmed - ${bookingId} 🎫`;
     sendSmtpEmail.htmlContent = `
